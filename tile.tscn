@@ -1,10 +1,31 @@
-[gd_scene format=2]
+[gd_scene load_steps=4 format=2]
 
-[node name="tile" type="Node2D"]
+[ext_resource path="res://Art/pixely_font.tres" type="DynamicFont" id=1]
+[ext_resource path="res://Art/light-blue.png" type="Texture" id=2]
+[ext_resource path="res://Tile.gd" type="Script" id=3]
 
-[node name="rect" type="ColorRect" parent="."]
-margin_right = 40.0
-margin_bottom = 40.0
+[node name="Tile" type="TextureButton"]
+margin_right = 32.0
+margin_bottom = 32.0
+texture_normal = ExtResource( 2 )
+script = ExtResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": false,
+"_editor_description_": ""
+}
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+margin_right = 32.0
+margin_bottom = 32.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="Label" type="Label" parent="CenterContainer"]
+margin_left = 10.0
+margin_top = 5.0
+margin_right = 22.0
+margin_bottom = 27.0
+custom_fonts/font = ExtResource( 1 )
+text = "3"
+[connection signal="button_up" from="." to="." method="_on_Tile_button_up"]
