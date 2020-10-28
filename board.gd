@@ -1,4 +1,4 @@
-extends Control
+extends Panel
 
 const TILE = preload("res://Tile.tscn")
 const tile_width = 32;
@@ -9,13 +9,19 @@ var tileArray = []
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	draw_board_tiles()
+	#center_on_screen()
 
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-#func _process(delta):
-#	pass
+func center_on_screen():
+	var x_offset = COLUMNS * tile_width * -1
+	var y_offset = ROWS * tile_width * -1
+	print(x_offset)
+	print(y_offset)
+	print(rect_position)
+	rect_position = rect_position + Vector2(x_offset, y_offset)
+	print(rect_position)
 
-func tile_clicked(tile):
+func tile_clicked():
 	print('tile clicked')
 
 func draw_board_tiles():
@@ -35,7 +41,7 @@ func draw_board_tiles():
 					quadrant = 4
 			var tile_instance = TILE.instance()
 			tile_instance.init(quadrant)
-			tile_instance.connect("on_tile_clicked", self, "tile_clicked")
 			tile_instance.set_position(Vector2(i*tile_width, j*tile_width))
 			add_child(tile_instance)
 			tileArray[i].append(tile_instance)
+			tile_instance.connect("on_tile_clicked", self, "tile_clicked")

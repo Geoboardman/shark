@@ -13,16 +13,10 @@ func _ready():
 func init(quad):
 	quadrant = quad
 	if quadrant > 0:
-		$CenterContainer/Label.text = str(quadrant)
+		$Label.text = str(quadrant)
 	else:
-		$CenterContainer/Label.text = ""	
-
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-#func _process(delta):
-#	pass
+		$Label.text = ""	
 
 
 func _on_Tile_button_up():
 	emit_signal("on_tile_clicked")
-	pass # Replace with function body.

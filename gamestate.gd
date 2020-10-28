@@ -112,7 +112,7 @@ remotesync func pre_start_game():
 		player.player_name = players[p].name
 		player.set_stock(players[p].stock, 1)
 		player.set_network_master(p) #set unique id as master.
-		world.get_node("HBoxContainer/Players").add_child(player)
+		world.get_node("Players").add_child(player)
 
 	if not get_tree().is_network_server():
 		# Tell server we are ready to start.
