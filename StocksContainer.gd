@@ -18,13 +18,14 @@ func _ready():
 
 func set_stock(stock_color, stock_delta):
 	stocks[stock_color] += stock_delta
-	$RedStock.text = str(stocks[gamestate.Stock_Color.RED])
-	$BlueStock.text = str(stocks[gamestate.Stock_Color.BLUE])
-	$GreenStock.text = str(stocks[gamestate.Stock_Color.GREEN])
-	$YellowStock.text = str(stocks[gamestate.Stock_Color.YELLOW])	
+	$RedStock.text = "$:" + str(stocks[gamestate.Stock_Color.RED])
+	$BlueStock.text = "$:" + str(stocks[gamestate.Stock_Color.BLUE])
+	$GreenStock.text = "$:" + str(stocks[gamestate.Stock_Color.GREEN])
+	$YellowStock.text = "$:" + str(stocks[gamestate.Stock_Color.YELLOW])	
 
 func trade_stock(stock_color, amount):
-	emit_signal("trade_stock", stock_color, amount)
+	var price = stocks[stock_color]
+	emit_signal("trade_stock", stock_color, price, amount)
 
 func _red_buy():
 	trade_stock(gamestate.Stock_Color.RED, 1)

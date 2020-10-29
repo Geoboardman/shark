@@ -2,7 +2,7 @@ extends Control
 
 
 var player_name = "player name"
-var money = 0
+var money = 10000
 # Stock counts in id:number.
 var stocks = {
 	gamestate.Stock_Color.YELLOW: 0,
@@ -14,7 +14,7 @@ var stocks = {
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	$Name.text = player_name
-	$Money.text = str(money)
+	$Money.text = "$:" + str(money)
 	$Stock/RedStock.text = str(stocks[gamestate.Stock_Color.RED])
 	$Stock/BlueStock.text = str(stocks[gamestate.Stock_Color.BLUE])
 	$Stock/GreenStock.text = str(stocks[gamestate.Stock_Color.GREEN])
@@ -30,3 +30,15 @@ func set_stock(stock_color, stock_delta):
 	$Stock/BlueStock.text = str(stocks[gamestate.Stock_Color.BLUE])
 	$Stock/GreenStock.text = str(stocks[gamestate.Stock_Color.GREEN])
 	$Stock/YellowStock.text = str(stocks[gamestate.Stock_Color.YELLOW])	
+
+func buy_stock(stock_color, stock_price, amount):
+	print("player buy stock")
+	var cost = amount * stock_price * -1
+	set_money(cost)
+	set_stock(stock_color, amount)
+	
+func sell_stock(stock_color, stock_price, amount):
+	print("player sell stock")
+	var cost = amount * stock_price * -1
+	set_money(cost)
+	set_stock(stock_color, amount)
