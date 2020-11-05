@@ -98,7 +98,6 @@ func refresh_lobby():
 	var players = gamestate.get_player_list()
 	players.sort()
 	$Players/List.clear()
-	#$Players/List.add_item(gamestate.get_player_name() + " (You)", get_stock_icon(gamestate.Stock_Color.GREEN))
 	for p in players:
 		var icon = get_stock_icon(p.stock)
 		$Players/List.add_item(p.name, icon)		

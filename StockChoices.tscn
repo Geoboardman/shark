@@ -1,0 +1,94 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://StockChoices.gd" type="Script" id=1]
+
+[sub_resource type="ButtonGroup" id=1]
+
+[node name="StockChoices" type="HBoxContainer"]
+margin_left = 75.0
+margin_top = 362.143
+margin_right = 183.0
+margin_bottom = 393.143
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="RedStockBox" type="CheckBox" parent="."]
+margin_right = 24.0
+margin_bottom = 31.0
+group = SubResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ColorRect" type="ColorRect" parent="RedStockBox"]
+margin_left = -1.11224
+margin_top = 34.0
+margin_right = 23.8878
+margin_bottom = 61.0
+color = Color( 0.984314, 0.00392157, 0.141176, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="BlueStockBox" type="CheckBox" parent="."]
+margin_left = 28.0
+margin_right = 52.0
+margin_bottom = 31.0
+group = SubResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ColorRect" type="ColorRect" parent="BlueStockBox"]
+margin_left = -1.11224
+margin_top = 34.0
+margin_right = 23.8878
+margin_bottom = 61.0
+color = Color( 0.0784314, 0, 1, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="GreenStockBox" type="CheckBox" parent="."]
+margin_left = 56.0
+margin_right = 80.0
+margin_bottom = 31.0
+group = SubResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ColorRect" type="ColorRect" parent="GreenStockBox"]
+margin_left = -1.11224
+margin_top = 34.0
+margin_right = 23.8878
+margin_bottom = 61.0
+color = Color( 0.027451, 0.509804, 0.196078, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="YellowStockBox" type="CheckBox" parent="."]
+margin_left = 84.0
+margin_right = 108.0
+margin_bottom = 31.0
+group = SubResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ColorRect" type="ColorRect" parent="YellowStockBox"]
+margin_left = -1.11224
+margin_top = 34.0
+margin_right = 23.8878
+margin_bottom = 61.0
+color = Color( 0.992157, 1, 0, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+[connection signal="button_up" from="RedStockBox" to="." method="_on_RedStockBox_button_up"]
+[connection signal="button_up" from="BlueStockBox" to="." method="_on_BlueStockBox_button_up"]
+[connection signal="button_up" from="GreenStockBox" to="." method="_on_GreenStockBox_button_up"]
+[connection signal="button_up" from="YellowStockBox" to="." method="_on_YellowStockBox_button_up"]

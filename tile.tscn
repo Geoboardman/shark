@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://Fonts/new_dynamicfont.tres" type="DynamicFont" id=1]
-[ext_resource path="res://Art/light-blue.png" type="Texture" id=2]
+[ext_resource path="res://Art/lightblue.png" type="Texture" id=2]
 [ext_resource path="res://Tile.gd" type="Script" id=3]
 
 [node name="Tile" type="TextureButton"]
@@ -14,15 +14,22 @@ __meta__ = {
 "_editor_description_": ""
 }
 
+[node name="ColorRect" type="ColorRect" parent="."]
+visible = false
+margin_left = 6.0
+margin_top = 6.0
+margin_right = 26.0
+margin_bottom = 26.0
+rect_min_size = Vector2( 20, 20 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
 [node name="Label" type="Label" parent="."]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -4.5
-margin_top = -9.5
-margin_right = 4.5
-margin_bottom = 9.5
+margin_left = 11.0
+margin_top = 6.0
+margin_right = 20.0
+margin_bottom = 25.0
 custom_fonts/font = ExtResource( 1 )
 text = "2"
 __meta__ = {

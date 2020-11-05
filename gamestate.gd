@@ -7,9 +7,7 @@ const DEFAULT_PORT = 10589
 const MAX_PEERS = 12
 enum Stock_Color {RED, YELLOW, BLUE, GREEN}
 var peer = null
-
-# Name for my player.
-var player_name = "The Warrior"
+var rng = RandomNumberGenerator.new()
 
 # Names for remote players in id:name format.
 var players = {}
@@ -95,25 +93,28 @@ func unregister_player(id):
 	players.erase(id)
 	emit_signal("player_list_changed")
 
+func RandomlyPickFirstPlayer():
+	rng.randomize()
+	return rng.randi_range(0, players.size()-1)
 
-remotesync func pre_start_game():
+remotesync func pre_start_game(first):
 	# Change scene.
 	var world = load("res://World.tscn").instance()
+	print("first player: " + str(first))
 	get_tree().get_root().add_child(world)
-
 	get_tree().get_root().get_node("Lobby").hide()
-
-	var player_scene = load("res://Player.tscn")
-
 	for p in players:
+		world.player_turn_order.push_back(p)
+	world.player_turn_order.sort()
+	var player_scene = load("res://Player.tscn")
+	for p in world.player_turn_order:
 		var player = player_scene.instance()
-
 		player.set_name(str(p)) # Use unique ID as node name.
 		player.player_name = players[p].name
 		player.set_stock(players[p].stock, 1)
-		player.set_network_master(p) #set unique id as master.
+		player.set_network_master(1) #set unique id as master.
 		world.get_node("Players").add_child(player)
-
+	world.set_current_player(first)
 	if not get_tree().is_network_server():
 		# Tell server we are ready to start.
 		rpc_id(1, "ready_to_start", get_tree().get_network_unique_id())
@@ -140,7 +141,6 @@ remote func ready_to_start(id):
 
 
 func host_game(new_player_name):
-	#player_name = new_player_name
 	peer = NetworkedMultiplayerENet.new()
 	peer.create_server(DEFAULT_PORT, MAX_PEERS)
 	get_tree().set_network_peer(peer)
@@ -151,7 +151,6 @@ func host_game(new_player_name):
 
 
 func join_game(ip, new_player_name):
-	#player_name = new_player_name
 	peer = NetworkedMultiplayerENet.new()
 	peer.create_client(ip, DEFAULT_PORT)
 	get_tree().set_network_peer(peer)
@@ -167,18 +166,10 @@ func get_player_list():
 	return players.values()
 
 
-func get_player_name():
-	return player_name
-
-
 func begin_game():
 	assert(get_tree().is_network_server())
-	# Call to pre-start game with the spawn points.
-	rpc("pre_start_game")
-	#for p in players:
-		#rpc_id(p, "pre_start_game")
-
-	#pre_start_game()
+	var first = RandomlyPickFirstPlayer()
+	rpc("pre_start_game", first)
 
 
 func end_game():
