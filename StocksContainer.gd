@@ -13,15 +13,19 @@ var stocks = {
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	set_stock(gamestate.Stock_Color.RED, 1000)
+	pass
 
 
-func set_stock(stock_color, stock_delta):
+master func stock_value_change(stock_delta, stock_color):
+	rpc("set_stock", stock_delta, stock_color)
+	
+
+remotesync func set_stock(stock_delta, stock_color):
 	stocks[stock_color] += stock_delta
-	$RedStock.text = "$" + str(stocks[gamestate.Stock_Color.RED])
-	$BlueStock.text = "$" + str(stocks[gamestate.Stock_Color.BLUE])
-	$GreenStock.text = "$" + str(stocks[gamestate.Stock_Color.GREEN])
-	$YellowStock.text = "$" + str(stocks[gamestate.Stock_Color.YELLOW])	
+	$RedStock.text = "$" + str(stocks[gamestate.Stock_Color.RED] * gamestate.SINGLE_STOCK_VAL)
+	$BlueStock.text = "$" + str(stocks[gamestate.Stock_Color.BLUE] * gamestate.SINGLE_STOCK_VAL)
+	$GreenStock.text = "$" + str(stocks[gamestate.Stock_Color.GREEN] * gamestate.SINGLE_STOCK_VAL)
+	$YellowStock.text = "$" + str(stocks[gamestate.Stock_Color.YELLOW] * gamestate.SINGLE_STOCK_VAL)	
 
 func trade_stock(stock_color, amount):
 	var price = stocks[stock_color]

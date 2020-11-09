@@ -2,7 +2,7 @@ extends Control
 
 var highlight = load("res://PlayerHighlight.tres")
 var player_name = "player name"
-var money = 10000
+var money = 0
 # Stock counts in id:number.
 var stocks = {
 	gamestate.Stock_Color.YELLOW: 0,
@@ -39,12 +39,22 @@ func set_stock(stock_color, stock_delta):
 
 remotesync func buy_stock(stock_color, stock_price, amount):
 	print("player buy stock")
-	var cost = amount * stock_price * -1
+	var cost = amount * stock_price * -1 * gamestate.SINGLE_STOCK_VAL
 	set_money(cost)
 	set_stock(stock_color, amount)
 	
 remotesync func sell_stock(stock_color, stock_price, amount):
 	print("player sell stock")
-	var cost = amount * stock_price * -1
+	var cost = amount * stock_price * -1 * gamestate.SINGLE_STOCK_VAL
 	set_money(cost)
 	set_stock(stock_color, amount)
+
+remotesync func update_money(delta):
+	set_money(delta)
+
+master func stock_value_change(stock_delta, stock_color):
+	if stocks[stock_color] > 0:
+		print("we have stock: " + str(stocks[stock_color]))
+		var money_delta = stocks[stock_color] * stock_delta * gamestate.SINGLE_STOCK_VAL
+		print("money delta: " + str(money_delta))
+		rpc("update_money", money_delta)

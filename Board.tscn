@@ -6,161 +6,161 @@
 [ext_resource path="res://Art/agk_spritesheet_dice2.png" type="Texture" id=4]
 [ext_resource path="res://Sound/dice1.wav" type="AudioStream" id=5]
 
-[sub_resource type="StyleBoxEmpty" id=32]
-
-[sub_resource type="AtlasTexture" id=1]
-flags = 4
-atlas = ExtResource( 4 )
-region = Rect2( 0, 0, 64, 64 )
+[sub_resource type="StyleBoxEmpty" id=1]
 
 [sub_resource type="AtlasTexture" id=2]
 flags = 4
 atlas = ExtResource( 4 )
-region = Rect2( 64, 0, 64, 64 )
+region = Rect2( 0, 0, 64, 64 )
 
 [sub_resource type="AtlasTexture" id=3]
 flags = 4
 atlas = ExtResource( 4 )
-region = Rect2( 128, 0, 64, 64 )
+region = Rect2( 64, 0, 64, 64 )
 
 [sub_resource type="AtlasTexture" id=4]
 flags = 4
 atlas = ExtResource( 4 )
-region = Rect2( 192, 0, 64, 64 )
+region = Rect2( 128, 0, 64, 64 )
 
 [sub_resource type="AtlasTexture" id=5]
 flags = 4
 atlas = ExtResource( 4 )
-region = Rect2( 256, 0, 64, 64 )
+region = Rect2( 192, 0, 64, 64 )
 
 [sub_resource type="AtlasTexture" id=6]
 flags = 4
 atlas = ExtResource( 4 )
-region = Rect2( 320, 0, 64, 64 )
+region = Rect2( 256, 0, 64, 64 )
 
 [sub_resource type="AtlasTexture" id=7]
 flags = 4
 atlas = ExtResource( 4 )
-region = Rect2( 0, 64, 64, 64 )
+region = Rect2( 320, 0, 64, 64 )
 
 [sub_resource type="AtlasTexture" id=8]
 flags = 4
 atlas = ExtResource( 4 )
-region = Rect2( 64, 64, 64, 64 )
+region = Rect2( 0, 64, 64, 64 )
 
 [sub_resource type="AtlasTexture" id=9]
 flags = 4
 atlas = ExtResource( 4 )
-region = Rect2( 128, 64, 64, 64 )
+region = Rect2( 64, 64, 64, 64 )
 
 [sub_resource type="AtlasTexture" id=10]
 flags = 4
 atlas = ExtResource( 4 )
-region = Rect2( 192, 64, 64, 64 )
+region = Rect2( 128, 64, 64, 64 )
 
 [sub_resource type="AtlasTexture" id=11]
 flags = 4
 atlas = ExtResource( 4 )
-region = Rect2( 256, 64, 64, 64 )
+region = Rect2( 192, 64, 64, 64 )
 
 [sub_resource type="AtlasTexture" id=12]
 flags = 4
 atlas = ExtResource( 4 )
-region = Rect2( 320, 64, 64, 64 )
+region = Rect2( 256, 64, 64, 64 )
 
 [sub_resource type="AtlasTexture" id=13]
 flags = 4
 atlas = ExtResource( 4 )
-region = Rect2( 0, 192, 64, 64 )
+region = Rect2( 320, 64, 64, 64 )
 
 [sub_resource type="AtlasTexture" id=14]
 flags = 4
 atlas = ExtResource( 4 )
-region = Rect2( 64, 192, 64, 64 )
+region = Rect2( 0, 192, 64, 64 )
 
 [sub_resource type="AtlasTexture" id=15]
 flags = 4
 atlas = ExtResource( 4 )
-region = Rect2( 128, 192, 64, 64 )
+region = Rect2( 64, 192, 64, 64 )
 
 [sub_resource type="AtlasTexture" id=16]
 flags = 4
 atlas = ExtResource( 4 )
-region = Rect2( 192, 192, 64, 64 )
+region = Rect2( 128, 192, 64, 64 )
 
 [sub_resource type="AtlasTexture" id=17]
 flags = 4
 atlas = ExtResource( 4 )
-region = Rect2( 256, 192, 64, 64 )
+region = Rect2( 192, 192, 64, 64 )
 
 [sub_resource type="AtlasTexture" id=18]
 flags = 4
 atlas = ExtResource( 4 )
-region = Rect2( 320, 192, 64, 64 )
+region = Rect2( 256, 192, 64, 64 )
 
 [sub_resource type="AtlasTexture" id=19]
 flags = 4
 atlas = ExtResource( 4 )
-region = Rect2( 0, 256, 64, 64 )
+region = Rect2( 320, 192, 64, 64 )
 
 [sub_resource type="AtlasTexture" id=20]
 flags = 4
 atlas = ExtResource( 4 )
-region = Rect2( 64, 256, 64, 64 )
+region = Rect2( 0, 256, 64, 64 )
 
 [sub_resource type="AtlasTexture" id=21]
 flags = 4
 atlas = ExtResource( 4 )
-region = Rect2( 128, 256, 64, 64 )
+region = Rect2( 64, 256, 64, 64 )
 
 [sub_resource type="AtlasTexture" id=22]
 flags = 4
 atlas = ExtResource( 4 )
-region = Rect2( 192, 256, 64, 64 )
+region = Rect2( 128, 256, 64, 64 )
 
 [sub_resource type="AtlasTexture" id=23]
 flags = 4
 atlas = ExtResource( 4 )
-region = Rect2( 256, 256, 64, 64 )
+region = Rect2( 192, 256, 64, 64 )
 
 [sub_resource type="AtlasTexture" id=24]
 flags = 4
 atlas = ExtResource( 4 )
-region = Rect2( 320, 256, 64, 64 )
+region = Rect2( 256, 256, 64, 64 )
 
 [sub_resource type="AtlasTexture" id=25]
 flags = 4
 atlas = ExtResource( 4 )
-region = Rect2( 0, 320, 64, 64 )
+region = Rect2( 320, 256, 64, 64 )
 
 [sub_resource type="AtlasTexture" id=26]
 flags = 4
 atlas = ExtResource( 4 )
-region = Rect2( 64, 320, 64, 64 )
+region = Rect2( 0, 320, 64, 64 )
 
 [sub_resource type="AtlasTexture" id=27]
 flags = 4
 atlas = ExtResource( 4 )
-region = Rect2( 128, 320, 64, 64 )
+region = Rect2( 64, 320, 64, 64 )
 
 [sub_resource type="AtlasTexture" id=28]
 flags = 4
 atlas = ExtResource( 4 )
-region = Rect2( 192, 320, 64, 64 )
+region = Rect2( 128, 320, 64, 64 )
 
 [sub_resource type="AtlasTexture" id=29]
 flags = 4
 atlas = ExtResource( 4 )
-region = Rect2( 256, 320, 64, 64 )
+region = Rect2( 192, 320, 64, 64 )
 
 [sub_resource type="AtlasTexture" id=30]
 flags = 4
 atlas = ExtResource( 4 )
+region = Rect2( 256, 320, 64, 64 )
+
+[sub_resource type="AtlasTexture" id=31]
+flags = 4
+atlas = ExtResource( 4 )
 region = Rect2( 320, 320, 64, 64 )
 
-[sub_resource type="SpriteFrames" id=31]
+[sub_resource type="SpriteFrames" id=32]
 animations = [ {
-"frames": [ SubResource( 1 ), SubResource( 2 ), SubResource( 3 ), SubResource( 4 ), SubResource( 5 ), SubResource( 6 ), SubResource( 7 ), SubResource( 8 ), SubResource( 9 ), SubResource( 10 ), SubResource( 11 ), SubResource( 12 ), SubResource( 13 ), SubResource( 14 ), SubResource( 15 ), SubResource( 16 ), SubResource( 17 ), SubResource( 18 ), SubResource( 19 ), SubResource( 20 ), SubResource( 21 ), SubResource( 22 ), SubResource( 23 ), SubResource( 24 ), SubResource( 25 ), SubResource( 26 ), SubResource( 27 ), SubResource( 28 ), SubResource( 29 ), SubResource( 30 ) ],
+"frames": [ SubResource( 2 ), SubResource( 3 ), SubResource( 4 ), SubResource( 5 ), SubResource( 6 ), SubResource( 7 ), SubResource( 8 ), SubResource( 9 ), SubResource( 10 ), SubResource( 11 ), SubResource( 12 ), SubResource( 13 ), SubResource( 14 ), SubResource( 15 ), SubResource( 16 ), SubResource( 17 ), SubResource( 18 ), SubResource( 19 ), SubResource( 20 ), SubResource( 21 ), SubResource( 22 ), SubResource( 23 ), SubResource( 24 ), SubResource( 25 ), SubResource( 26 ), SubResource( 27 ), SubResource( 28 ), SubResource( 29 ), SubResource( 30 ), SubResource( 31 ) ],
 "loop": true,
 "name": "default",
 "speed": 5.0
@@ -177,12 +177,24 @@ __meta__ = {
 [node name="Tiles_Container" type="ColorRect" parent="."]
 margin_right = 108.0
 
+[node name="EndTurn" type="Button" parent="."]
+visible = false
+margin_left = -8.8194
+margin_top = 71.8154
+margin_right = 99.1806
+margin_bottom = 96.8154
+custom_fonts/font = ExtResource( 2 )
+text = "End Turn"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
 [node name="RollVBox" type="Panel" parent="."]
 margin_right = 200.0
 margin_bottom = 250.0
 size_flags_horizontal = 2
 size_flags_vertical = 2
-custom_styles/panel = SubResource( 32 )
+custom_styles/panel = SubResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -208,10 +220,11 @@ margin_bottom = 124.815
 [node name="Dice" type="AnimatedSprite" parent="RollVBox"]
 position = Vector2( 45.3572, 26.4583 )
 scale = Vector2( 0.7, 0.7 )
-frames = SubResource( 31 )
+frames = SubResource( 32 )
 frame = 15
 
 [node name="DiceRoll" type="AudioStreamPlayer" parent="RollVBox"]
 stream = ExtResource( 5 )
+[connection signal="button_up" from="EndTurn" to="." method="_on_EndTurn_button_up"]
 [connection signal="button_up" from="RollVBox/Roll" to="." method="_on_Roll_button_up"]
 [connection signal="stock_picked" from="RollVBox/StockChoices" to="." method="_on_StockChoices_stock_picked"]

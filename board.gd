@@ -10,6 +10,9 @@ var color_roll
 
 signal roll_dice()
 signal place_building()
+signal end_turn()
+signal end_placement_phase()
+signal stock_val_change()
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -29,20 +32,21 @@ func position_roll_btn():
 	roll_box.set_position(Vector2(pos.x + ROWS * tile_width / 2 - 55, pos.y + COLUMNS * tile_width + 25))
 
 
-func getAdjacentTiles(x, y):
+func get_adjacent_tiles(x, y):
 	var adjacent = []
-	if x > 1:
+	if x > 1: #left
 		adjacent.append(tileArray[x-1][y])
-	if x < COLUMNS-1:
+	if x < COLUMNS-1: #right
 		adjacent.append(tileArray[x+1][y])
-	if y > 1:
+	if y < ROWS-1: #down
 		adjacent.append(tileArray[x][y+1])
-	if y < ROWS-1:
+	if y > 0: #up
 		adjacent.append(tileArray[x][y-1])
 	return adjacent
-		
+
 
 master func request_place_building(x, y, color):
+	var enemy_chains = []
 	print("x: " + str(x) + " y: " + str(y))
 	var tile = tileArray[x][y]
 	if tile.quadrant != quadrant_roll:
@@ -51,19 +55,63 @@ master func request_place_building(x, y, color):
 	if tile.color != null:
 		print("already has building")
 		return		
-	var adjacent = getAdjacentTiles(x, y)
+	var adjacent = get_adjacent_tiles(x, y)
 	for adj in adjacent:
 		if adj.color != null and adj.color != color:
 			print("adjacent has building")
-			return
+			var enemy = get_building_chain(adj.x, adj.y, adj.color)
+			enemy_chains.push_back(enemy)
+	if enemy_chains.size() > 0:
+		#Hacky code, updating color to get the theoretical chain if building was placed already
+		tileArray[x][y].color = color
+		var my_chain = get_building_chain(x, y, color)
+		tileArray[x][y].color = null
+		for enemy_chain in enemy_chains:
+			if enemy_chain.size() >= my_chain.size():
+				print("can't place next to enemy chain")
+				return
+	#SUCCESS!
+	var stock_incr = get_stock_increase(x, y, color)
+	emit_signal("stock_val_change", stock_incr, color)
 	rpc("building_placed", x, y, color)
+	emit_signal("end_placement_phase")
+	rpc("end_phase_ui_update")
+
+
+master func get_stock_increase(x, y, color):
+	var solo_tiles = 0
+	var base_increase = 0
+	var adj_tiles = get_adjacent_tiles(x, y)
+	for adj in adj_tiles:
+		if adj.color == color:
+			base_increase = 1
+			var solo_adj_tiles = get_adjacent_tiles(adj.x, adj.y)
+			var is_solo = true
+			for solo in solo_adj_tiles:
+				if solo.color != null:
+					is_solo = false
+			if is_solo:
+				solo_tiles += 1
+	return base_increase + solo_tiles
+
+
+remotesync func end_phase_ui_update():
+	$RollVBox.hide()
+	$EndTurn.show()
 
 
 func get_building_chain(x, y, color):
-	var seen = [Vector2(x,y)]
-	var chain = [Vector2(x,y)]
-	var tile = tileArray[x][y]
-	
+	var seen = []
+	var adj_tiles
+	var to_process = [tileArray[x][y]]
+	while to_process.size() > 0:
+		var next_tile = to_process.pop_front()
+		seen.push_back(next_tile)
+		adj_tiles = get_adjacent_tiles(next_tile.x, next_tile.y)
+		for adj in adj_tiles:
+			if (not seen.has(adj)) and adj.color == color:
+				to_process.push_back(adj)
+	return seen
 
 
 remotesync func building_placed(x, y, color):
@@ -72,7 +120,8 @@ remotesync func building_placed(x, y, color):
 
 
 func tile_clicked(x, y):
-	emit_signal("place_building", x, y, color_roll)
+	if color_roll != null:
+		emit_signal("place_building", x, y, color_roll)
 
 
 func draw_board_tiles():
@@ -108,6 +157,7 @@ func draw_board_tiles():
 
 func _on_Roll_button_up():
 	emit_signal("roll_dice")
+
 
 func get_color_from_num(color_num):
 	#1 red 2 yellow 3 green 4 blue 5 & 6 white
@@ -160,3 +210,10 @@ func _on_StockChoices_stock_picked(color):
 		color_num = 4
 	set_dice_image(quadrant_roll, color_num)
 	color_roll = color				
+
+remotesync func begin_turn():
+	$RollVBox.show()
+	$EndTurn.hide()
+
+func _on_EndTurn_button_up():
+	emit_signal("end_turn")

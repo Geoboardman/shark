@@ -44,7 +44,7 @@ margin_right = 102.0
 margin_bottom = 45.0
 custom_fonts/font = ExtResource( 5 )
 custom_colors/font_color = Color( 1, 0, 0, 1 )
-text = "$1000"
+text = "$0"
 
 [node name="HBoxContainer" type="HBoxContainer" parent="StocksContainer"]
 margin_top = 49.0
@@ -71,7 +71,7 @@ margin_right = 102.0
 margin_bottom = 92.0
 custom_fonts/font = ExtResource( 5 )
 custom_colors/font_color = Color( 0.0313726, 0, 1, 1 )
-text = "$1000"
+text = "$0"
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="StocksContainer"]
 margin_top = 96.0
@@ -98,7 +98,7 @@ margin_right = 102.0
 margin_bottom = 139.0
 custom_fonts/font = ExtResource( 5 )
 custom_colors/font_color = Color( 0, 1, 0.321569, 1 )
-text = "$1000"
+text = "$0"
 
 [node name="HBoxContainer4" type="HBoxContainer" parent="StocksContainer"]
 margin_top = 143.0
@@ -125,7 +125,7 @@ margin_right = 102.0
 margin_bottom = 186.0
 custom_fonts/font = ExtResource( 5 )
 custom_colors/font_color = Color( 0.945098, 1, 0, 1 )
-text = "$1000"
+text = "$0"
 
 [node name="HBoxContainer3" type="HBoxContainer" parent="StocksContainer"]
 margin_top = 190.0
@@ -145,8 +145,11 @@ text = "Sell"
 __meta__ = {
 "_edit_use_anchors_": false
 }
+[connection signal="end_placement_phase" from="Board" to="." method="_on_Board_end_placement_phase"]
+[connection signal="end_turn" from="Board" to="." method="_on_Board_end_turn"]
 [connection signal="place_building" from="Board" to="." method="_on_Board_place_building"]
 [connection signal="roll_dice" from="Board" to="." method="request_roll_dice"]
+[connection signal="stock_val_change" from="Board" to="." method="_on_Board_stock_val_change"]
 [connection signal="trade_stock" from="StocksContainer" to="." method="trade_stock"]
 [connection signal="button_up" from="StocksContainer/HBoxContainer/Buy" to="StocksContainer" method="_red_buy"]
 [connection signal="button_up" from="StocksContainer/HBoxContainer/Sell" to="StocksContainer" method="_red_sell"]
