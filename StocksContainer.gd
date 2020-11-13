@@ -2,6 +2,7 @@ extends VBoxContainer
 
 signal trade_stock()
 
+var buys_left = 0
 # Stock counts in id:number.
 var stocks = {
 	gamestate.Stock_Color.YELLOW: 0,
@@ -18,14 +19,21 @@ func _ready():
 
 master func stock_value_change(stock_delta, stock_color):
 	rpc("set_stock", stock_delta, stock_color)
-	
+
+
+remotesync func set_buys(buys, max_buys):
+	buys_left = buys
+	$Buys.text = "Buys " + str(buys_left) + "/" + str(max_buys)
+
 
 remotesync func set_stock(stock_delta, stock_color):
+	print("stock changed: " + str(stock_delta))
 	stocks[stock_color] += stock_delta
 	$RedStock.text = "$" + str(stocks[gamestate.Stock_Color.RED] * gamestate.SINGLE_STOCK_VAL)
 	$BlueStock.text = "$" + str(stocks[gamestate.Stock_Color.BLUE] * gamestate.SINGLE_STOCK_VAL)
 	$GreenStock.text = "$" + str(stocks[gamestate.Stock_Color.GREEN] * gamestate.SINGLE_STOCK_VAL)
 	$YellowStock.text = "$" + str(stocks[gamestate.Stock_Color.YELLOW] * gamestate.SINGLE_STOCK_VAL)	
+
 
 func trade_stock(stock_color, amount):
 	var price = stocks[stock_color]

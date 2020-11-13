@@ -1,10 +1,20 @@
 extends Control
 
 var current_player = -1
-enum Turn_Phase {ROLL, PLACEMENT, END}
+enum Turn_Phase {ROLL, PLACEMENT, SELL, END}
 var current_phase = Turn_Phase.ROLL
 var player_turn_order = []
+var players_in_debt = []
 var rng = RandomNumberGenerator.new()
+const MAX_BUYS = 5
+var total_stock_buys = 0
+var pre_roll_buys = 0
+var stock_buys = {
+	gamestate.Stock_Color.YELLOW: 0,
+	gamestate.Stock_Color.RED: 0,
+	gamestate.Stock_Color.BLUE: 0,
+	gamestate.Stock_Color.GREEN: 0,
+}
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -37,13 +47,13 @@ func request_roll_dice():
 	else:
 		rpc_id(1, "roll_dice")
 
-master func action_check(sender_id, phase):
+master func action_check(sender_id, phases):
 	if sender_id == 0:
 		sender_id = 1
 	if sender_id != get_current_player():
 		print("not your turn")
 		return false
-	if current_phase != phase:
+	if not phases.has(current_phase):
 		print("incorrect phase")
 		return false
 	return true
@@ -51,7 +61,7 @@ master func action_check(sender_id, phase):
 
 master func roll_dice():
 	var sender_id = get_tree().get_rpc_sender_id()
-	if not action_check(sender_id, Turn_Phase.ROLL):
+	if not action_check(sender_id, [Turn_Phase.ROLL]):
 		return
 	print("rolling dice")
 	rng.randomize()
@@ -60,8 +70,9 @@ master func roll_dice():
 		quadrant_roll = 5
 	var color_roll = rng.randi_range(1, 6)
 	$Board.rpc("dice_rolled", quadrant_roll, color_roll)
-	current_phase = Turn_Phase.PLACEMENT # TODO do we need to sync this among all clients? For client side checking/updates?
-	
+	reset_buys()
+	rpc("update_turn_phase", Turn_Phase.PLACEMENT)
+
 
 func trade_stock(stock_color, stock_price, amount):
 	print("trade_stock " + str(stock_color) + "" + str(amount))
@@ -72,8 +83,14 @@ func trade_stock(stock_color, stock_price, amount):
 		rpc_id(1, "verify_trade", p_id, stock_color, stock_price, amount)
 
 
-remote func verify_trade(p_id, stock_color, stock_price, amount):
+master func verify_trade(p_id, stock_color, stock_price, amount):
 	var str_pid = str(p_id)
+	if amount > 0 and (not action_check(p_id, [Turn_Phase.ROLL, Turn_Phase.END])):
+		print("cannot buy right now")
+		return
+	if amount < 0 and (not action_check(p_id, [Turn_Phase.ROLL, Turn_Phase.SELL, Turn_Phase.END])):
+		print("cannot sell right now")
+		return		
 	var player = get_player_node(p_id)
 	if player == null:
 		print("error player not found in verify trade")
@@ -81,14 +98,65 @@ remote func verify_trade(p_id, stock_color, stock_price, amount):
 	print("verify trade " + str_pid + str(stock_color) + str(amount))
 	if amount == 0 or stock_price == 0:
 		return
-	elif amount > 0:
+	print("total buys: " + str(total_stock_buys))
+	print("prerollbuys: " + str(pre_roll_buys))
+	var incr = calc_total_incr(stock_color, amount)
+	print("incr: " + str(incr))
+	if total_stock_buys + pre_roll_buys + incr > MAX_BUYS:
+		print("max buys reached")
+		return
+	make_trade(p_id, stock_color, stock_price, amount)
+
+
+#Calculate how much total_buys would increase with this stock_color and amount
+master func calc_total_incr(stock_color, amount):
+	var old_value = stock_buys[stock_color]
+	if old_value > 0:
+		return amount
+	else:
+		return old_value + amount
+
+
+master func reset_buys():
+	if current_phase == Turn_Phase.END:
+		pre_roll_buys = 0
+		total_stock_buys = 0
+	else:
+		pre_roll_buys = total_stock_buys
+		total_stock_buys = 0
+
+	$StocksContainer.rpc("set_buys", total_stock_buys + pre_roll_buys, MAX_BUYS)	
+	stock_buys = {
+		gamestate.Stock_Color.YELLOW: 0,
+		gamestate.Stock_Color.RED: 0,
+		gamestate.Stock_Color.BLUE: 0,
+		gamestate.Stock_Color.GREEN: 0,
+	}
+
+
+master func update_total_buys(stock_color, amount):	
+	var buys = 0
+	stock_buys[stock_color] += amount
+	for stock in stock_buys:
+		if stock_buys[stock] > 0:
+			buys += stock_buys[stock]
+	total_stock_buys = buys
+	$StocksContainer.rpc("set_buys", total_stock_buys + pre_roll_buys, MAX_BUYS)
+	print("total stock buys: " + str(total_stock_buys))
+
+
+master func make_trade(p_id, stock_color, stock_price, amount):
+	var player = get_player_node(p_id)
+	if amount > 0:
 		var money = player.money
-		if money >= stock_price * amount:
+		if money >= stock_price * gamestate.SINGLE_STOCK_VAL * amount:
+			update_total_buys(stock_color, amount)			
 			player.rpc("buy_stock", stock_color, stock_price, amount)
 	elif amount < 0:
 		var stocks_available = player.stocks[stock_color]
 		if stocks_available >= amount * -1:
-			player.rpc("sell_stock",stock_color, stock_price, amount)
+			update_total_buys(stock_color, amount)			
+			player.rpc("sell_stock",stock_color, stock_price, amount)	
 
 
 func get_player_node(id):
@@ -98,7 +166,7 @@ func get_player_node(id):
 remote func request_place_building(x, y, color):
 	print("request place building")
 	var sender_id = get_tree().get_rpc_sender_id()
-	if not action_check(sender_id, Turn_Phase.PLACEMENT):
+	if not action_check(sender_id, [Turn_Phase.PLACEMENT]):
 		return
 	$Board.request_place_building(x, y, color)
 
@@ -129,9 +197,10 @@ func _on_Board_end_turn():
 
 master func end_turn():
 	var sender_id = get_tree().get_rpc_sender_id()
-	if not action_check(sender_id, Turn_Phase.END):
+	if not action_check(sender_id, [Turn_Phase.END]):
 		return
 	rpc("next_player")
+	reset_buys()	
 	rpc("update_turn_phase", Turn_Phase.ROLL)
 	$Board.rpc("begin_turn")
 
@@ -143,9 +212,20 @@ remotesync func next_player():
 	set_current_player(player_index)
 
 
-master func _on_Board_end_placement_phase():	
-	rpc("update_turn_phase",Turn_Phase.END)
+master func _on_Board_end_placement_phase():
+	if players_in_debt.size() > 0:
+		rpc("update_turn_phase", Turn_Phase.SELL)
+	else:
+		rpc("update_turn_phase",Turn_Phase.END)
 
+
+master func chain_destroyed(size, color, remainder):
+	var stock_val = $StocksContainer.stocks[color]
+	if remainder > 0 and stock_val - size == 0:
+		size -= 1
+	if size > 0:
+		print("destroy chain " + str(size))
+		_on_Board_stock_val_change(size * -1, color)
 
 master func _on_Board_stock_val_change(stock_delta, stock_color):
 	var cur_stock_val = $StocksContainer.stocks[stock_color]
@@ -154,12 +234,16 @@ master func _on_Board_stock_val_change(stock_delta, stock_color):
 		if cur_stock_val == 0:
 			stock_delta = 1
 	#Prevent stock from going 1-3
-	if cur_stock_val == 1 and stock_delta == 2:
-		stock_delta = 1
+	if cur_stock_val == 1 and stock_delta > 1:
+		stock_delta -= 1
 	$StocksContainer.stock_value_change(stock_delta, stock_color)
 	for p_id in player_turn_order:
 		var player = get_player_node(p_id)
-		player.stock_value_change(stock_delta, stock_color)
+		if stock_delta > 0 or (stock_delta < 0 and p_id != current_player):
+			player.stock_value_change(stock_delta, stock_color)
+			if player.money < 0:
+				print("player is in debt")
+				players_in_debt.push_front(player)
 	if stock_delta > 0:
 		pay_stock_bonus(stock_color)
 	

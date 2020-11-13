@@ -7,12 +7,19 @@ export var COLUMNS = 12;
 var tileArray = []
 var quadrant_roll
 var color_roll
+var tile_colors = {
+	gamestate.Stock_Color.YELLOW: 0,
+	gamestate.Stock_Color.RED: 0,
+	gamestate.Stock_Color.BLUE: 0,
+	gamestate.Stock_Color.GREEN: 0,
+}
 
 signal roll_dice()
 signal place_building()
 signal end_turn()
 signal end_placement_phase()
 signal stock_val_change()
+signal chain_destroyed()
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -72,11 +79,26 @@ master func request_place_building(x, y, color):
 				return
 	#SUCCESS!
 	var stock_incr = get_stock_increase(x, y, color)
+	#Payout players
 	emit_signal("stock_val_change", stock_incr, color)
+	#Place building
 	rpc("building_placed", x, y, color)
+	#Destroy enemy chains
+	if enemy_chains.size() > 0:
+		for chain in enemy_chains:
+			var chain_color = chain[0].color
+			destroy_chain(chain)
+			emit_signal("chain_destroyed", chain.size(), chain_color, tile_colors[chain_color])
+	#Move to next phase
 	emit_signal("end_placement_phase")
 	rpc("end_phase_ui_update")
 
+
+master func destroy_chain(chain):
+	var color = chain[0].color
+	tile_colors[color] -= chain.size()
+	for tile in chain:
+		tile.rpc("destroy")
 
 master func get_stock_increase(x, y, color):
 	var solo_tiles = 0
@@ -117,6 +139,7 @@ func get_building_chain(x, y, color):
 remotesync func building_placed(x, y, color):
 	print("building placed: " + str(color))
 	tileArray[x][y].set_color(color)
+	tile_colors[color] += 1
 
 
 func tile_clicked(x, y):

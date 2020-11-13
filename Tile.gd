@@ -19,6 +19,12 @@ func init(quad):
 		set("Textures/Normal", middle_color)
 		$Label.text = ""	
 
+remotesync func destroy():
+	$ColorRect.hide()
+	$Label.show()
+	color = null	
+	$Explosion.play()
+	$ExplodeSprite.play()
 
 func _on_Tile_button_up():
 	emit_signal("on_tile_clicked", x, y)

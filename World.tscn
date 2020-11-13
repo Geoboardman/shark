@@ -32,24 +32,31 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Title" type="Label" parent="StocksContainer"]
+[node name="Buys" type="Label" parent="StocksContainer"]
 margin_right = 102.0
-margin_bottom = 22.0
+margin_bottom = 19.0
+custom_fonts/font = ExtResource( 5 )
+text = "Buys 0/5"
+
+[node name="Title" type="Label" parent="StocksContainer"]
+margin_top = 23.0
+margin_right = 102.0
+margin_bottom = 45.0
 custom_fonts/font = ExtResource( 3 )
 text = "Stock Prices"
 
 [node name="RedStock" type="Label" parent="StocksContainer"]
-margin_top = 26.0
+margin_top = 49.0
 margin_right = 102.0
-margin_bottom = 45.0
+margin_bottom = 68.0
 custom_fonts/font = ExtResource( 5 )
 custom_colors/font_color = Color( 1, 0, 0, 1 )
 text = "$0"
 
 [node name="HBoxContainer" type="HBoxContainer" parent="StocksContainer"]
-margin_top = 49.0
+margin_top = 72.0
 margin_right = 102.0
-margin_bottom = 69.0
+margin_bottom = 92.0
 
 [node name="Buy" type="Button" parent="StocksContainer/HBoxContainer"]
 margin_right = 36.0
@@ -66,17 +73,17 @@ __meta__ = {
 }
 
 [node name="BlueStock" type="Label" parent="StocksContainer"]
-margin_top = 73.0
+margin_top = 96.0
 margin_right = 102.0
-margin_bottom = 92.0
+margin_bottom = 115.0
 custom_fonts/font = ExtResource( 5 )
 custom_colors/font_color = Color( 0.0313726, 0, 1, 1 )
 text = "$0"
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="StocksContainer"]
-margin_top = 96.0
+margin_top = 119.0
 margin_right = 102.0
-margin_bottom = 116.0
+margin_bottom = 139.0
 
 [node name="Buy" type="Button" parent="StocksContainer/HBoxContainer2"]
 margin_right = 36.0
@@ -93,17 +100,17 @@ __meta__ = {
 }
 
 [node name="GreenStock" type="Label" parent="StocksContainer"]
-margin_top = 120.0
+margin_top = 143.0
 margin_right = 102.0
-margin_bottom = 139.0
+margin_bottom = 162.0
 custom_fonts/font = ExtResource( 5 )
 custom_colors/font_color = Color( 0, 1, 0.321569, 1 )
 text = "$0"
 
 [node name="HBoxContainer4" type="HBoxContainer" parent="StocksContainer"]
-margin_top = 143.0
+margin_top = 166.0
 margin_right = 102.0
-margin_bottom = 163.0
+margin_bottom = 186.0
 
 [node name="Buy" type="Button" parent="StocksContainer/HBoxContainer4"]
 margin_right = 36.0
@@ -120,17 +127,17 @@ __meta__ = {
 }
 
 [node name="YellowStock" type="Label" parent="StocksContainer"]
-margin_top = 167.0
+margin_top = 190.0
 margin_right = 102.0
-margin_bottom = 186.0
+margin_bottom = 209.0
 custom_fonts/font = ExtResource( 5 )
 custom_colors/font_color = Color( 0.945098, 1, 0, 1 )
 text = "$0"
 
 [node name="HBoxContainer3" type="HBoxContainer" parent="StocksContainer"]
-margin_top = 190.0
+margin_top = 213.0
 margin_right = 102.0
-margin_bottom = 210.0
+margin_bottom = 233.0
 
 [node name="Buy" type="Button" parent="StocksContainer/HBoxContainer3"]
 margin_right = 36.0
@@ -145,6 +152,7 @@ text = "Sell"
 __meta__ = {
 "_edit_use_anchors_": false
 }
+[connection signal="chain_destroyed" from="Board" to="." method="chain_destroyed"]
 [connection signal="end_placement_phase" from="Board" to="." method="_on_Board_end_placement_phase"]
 [connection signal="end_turn" from="Board" to="." method="_on_Board_end_turn"]
 [connection signal="place_building" from="Board" to="." method="_on_Board_place_building"]
