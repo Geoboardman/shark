@@ -47,10 +47,10 @@ func request_roll_dice():
 	else:
 		rpc_id(1, "roll_dice")
 
-master func action_check(sender_id, phases):
+master func action_check(sender_id, valid_ids, phases):
 	if sender_id == 0:
 		sender_id = 1
-	if sender_id != get_current_player():
+	if not valid_ids.has(sender_id):
 		print("not your turn")
 		return false
 	if not phases.has(current_phase):
@@ -61,7 +61,7 @@ master func action_check(sender_id, phases):
 
 master func roll_dice():
 	var sender_id = get_tree().get_rpc_sender_id()
-	if not action_check(sender_id, [Turn_Phase.ROLL]):
+	if not action_check(sender_id, [get_current_player()], [Turn_Phase.ROLL]):
 		return
 	print("rolling dice")
 	rng.randomize()
@@ -85,12 +85,13 @@ func trade_stock(stock_color, stock_price, amount):
 
 master func verify_trade(p_id, stock_color, stock_price, amount):
 	var str_pid = str(p_id)
-	if amount > 0 and (not action_check(p_id, [Turn_Phase.ROLL, Turn_Phase.END])):
-		print("cannot buy right now")
-		return
-	if amount < 0 and (not action_check(p_id, [Turn_Phase.ROLL, Turn_Phase.SELL, Turn_Phase.END])):
-		print("cannot sell right now")
-		return		
+	if current_phase == Turn_Phase.SELL:
+		if not action_check(p_id, players_in_debt, [Turn_Phase.SELL]):
+			print("only players in debt can sell")
+			return
+	elif not action_check(p_id, [get_current_player()], [Turn_Phase.ROLL, Turn_Phase.END]):
+		print("make trades on your turn/right phase")
+		return	
 	var player = get_player_node(p_id)
 	if player == null:
 		print("error player not found in verify trade")
@@ -153,10 +154,18 @@ master func make_trade(p_id, stock_color, stock_price, amount):
 			update_total_buys(stock_color, amount)			
 			player.rpc("buy_stock", stock_color, stock_price, amount)
 	elif amount < 0:
+		if current_phase == Turn_Phase.SELL and stock_price > 1000:			
+			stock_price = stock_price / 2
+			print("cut stock price in half: " + str(stock_price))
 		var stocks_available = player.stocks[stock_color]
 		if stocks_available >= amount * -1:
-			update_total_buys(stock_color, amount)			
-			player.rpc("sell_stock",stock_color, stock_price, amount)	
+			update_total_buys(stock_color, amount)
+			player.rpc("sell_stock",stock_color, stock_price, amount)
+			if current_phase == Turn_Phase.SELL and player.money >= 0:
+				var p_index = players_in_debt.find(p_id)
+				players_in_debt.remove(p_index)
+				if players_in_debt.size() == 0:
+					rpc("update_turn_phase", Turn_Phase.END)
 
 
 func get_player_node(id):
@@ -166,7 +175,7 @@ func get_player_node(id):
 remote func request_place_building(x, y, color):
 	print("request place building")
 	var sender_id = get_tree().get_rpc_sender_id()
-	if not action_check(sender_id, [Turn_Phase.PLACEMENT]):
+	if not action_check(sender_id, [get_current_player()], [Turn_Phase.PLACEMENT]):
 		return
 	$Board.request_place_building(x, y, color)
 
@@ -197,7 +206,7 @@ func _on_Board_end_turn():
 
 master func end_turn():
 	var sender_id = get_tree().get_rpc_sender_id()
-	if not action_check(sender_id, [Turn_Phase.END]):
+	if not action_check(sender_id, [get_current_player()], [Turn_Phase.END]):
 		return
 	rpc("next_player")
 	reset_buys()	
@@ -216,10 +225,11 @@ master func _on_Board_end_placement_phase():
 	if players_in_debt.size() > 0:
 		rpc("update_turn_phase", Turn_Phase.SELL)
 	else:
-		rpc("update_turn_phase",Turn_Phase.END)
+		rpc("update_turn_phase", Turn_Phase.END)
 
 
 master func chain_destroyed(size, color, remainder):
+	print("chain destroy called " + str(size) + " remain " + str(remainder))
 	var stock_val = $StocksContainer.stocks[color]
 	if remainder > 0 and stock_val - size == 0:
 		size -= 1
@@ -239,11 +249,11 @@ master func _on_Board_stock_val_change(stock_delta, stock_color):
 	$StocksContainer.stock_value_change(stock_delta, stock_color)
 	for p_id in player_turn_order:
 		var player = get_player_node(p_id)
-		if stock_delta > 0 or (stock_delta < 0 and p_id != current_player):
+		if stock_delta > 0 or (stock_delta < 0 and p_id != get_current_player()):
 			player.stock_value_change(stock_delta, stock_color)
 			if player.money < 0:
 				print("player is in debt")
-				players_in_debt.push_front(player)
+				players_in_debt.push_front(p_id)
 	if stock_delta > 0:
 		pay_stock_bonus(stock_color)
 	

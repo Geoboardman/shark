@@ -29,6 +29,11 @@ func set_current_player(enable):
 func set_money(money_delta):
 	money += money_delta
 	$VCont/Money.text = "$" + str(money)
+	if money < 0:
+		$VCont/Money.set("custom_colors/font_color", Color(1,0,0))
+	else:
+		$VCont/Money.set("custom_colors/font_color", Color(1,1,1))
+
 
 func set_stock(stock_color, stock_delta):
 	stocks[stock_color] += stock_delta

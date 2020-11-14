@@ -7,7 +7,7 @@ export var COLUMNS = 12;
 var tileArray = []
 var quadrant_roll
 var color_roll
-var tile_colors = {
+var total_remaining = {
 	gamestate.Stock_Color.YELLOW: 0,
 	gamestate.Stock_Color.RED: 0,
 	gamestate.Stock_Color.BLUE: 0,
@@ -88,7 +88,7 @@ master func request_place_building(x, y, color):
 		for chain in enemy_chains:
 			var chain_color = chain[0].color
 			destroy_chain(chain)
-			emit_signal("chain_destroyed", chain.size(), chain_color, tile_colors[chain_color])
+			emit_signal("chain_destroyed", chain.size(), chain_color, total_remaining[chain_color])
 	#Move to next phase
 	emit_signal("end_placement_phase")
 	rpc("end_phase_ui_update")
@@ -96,7 +96,9 @@ master func request_place_building(x, y, color):
 
 master func destroy_chain(chain):
 	var color = chain[0].color
-	tile_colors[color] -= chain.size()
+	total_remaining[color] -= chain.size()
+	if total_remaining[color] < 0:
+		total_remaining[color] = 0
 	for tile in chain:
 		tile.rpc("destroy")
 
@@ -139,7 +141,7 @@ func get_building_chain(x, y, color):
 remotesync func building_placed(x, y, color):
 	print("building placed: " + str(color))
 	tileArray[x][y].set_color(color)
-	tile_colors[color] += 1
+	total_remaining[color] += 1
 
 
 func tile_clicked(x, y):
