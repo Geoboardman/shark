@@ -44,13 +44,13 @@ func set_stock(stock_color, stock_delta):
 
 remotesync func buy_stock(stock_color, stock_price, amount):
 	print("player buy stock")
-	var cost = amount * stock_price * -1 * gamestate.SINGLE_STOCK_VAL
+	var cost = amount * stock_price * -1
 	set_money(cost)
 	set_stock(stock_color, amount)
 	
 remotesync func sell_stock(stock_color, stock_price, amount):
 	print("player sell stock")
-	var cost = amount * stock_price * -1 * gamestate.SINGLE_STOCK_VAL
+	var cost = amount * stock_price * -1
 	set_money(cost)
 	set_stock(stock_color, amount)
 

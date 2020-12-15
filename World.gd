@@ -148,19 +148,18 @@ master func update_total_buys(stock_color, amount):
 
 master func make_trade(p_id, stock_color, stock_price, amount):
 	var player = get_player_node(p_id)
-	if amount > 0:
+	if amount > 0 and $StocksContainer.stocks_left[stock_color] >= amount:
 		var money = player.money
-		if money >= stock_price * gamestate.SINGLE_STOCK_VAL * amount:
+		if money >= stock_price * amount:
 			update_total_buys(stock_color, amount)			
 			player.rpc("buy_stock", stock_color, stock_price, amount)
+			$StocksContainer.rpc("stock_trade", amount*-1, stock_color)
 	elif amount < 0:
-		if current_phase == Turn_Phase.SELL and stock_price > 1000:			
-			stock_price = stock_price / 2
-			print("cut stock price in half: " + str(stock_price))
 		var stocks_available = player.stocks[stock_color]
 		if stocks_available >= amount * -1:
 			update_total_buys(stock_color, amount)
 			player.rpc("sell_stock",stock_color, stock_price, amount)
+			$StocksContainer.rpc("stock_trade", amount*-1, stock_color)
 			if current_phase == Turn_Phase.SELL and player.money >= 0:
 				var p_index = players_in_debt.find(p_id)
 				players_in_debt.remove(p_index)
@@ -230,23 +229,27 @@ master func _on_Board_end_placement_phase():
 
 master func chain_destroyed(size, color, remainder):
 	print("chain destroy called " + str(size) + " remain " + str(remainder))
-	var stock_val = $StocksContainer.stocks[color]
+	var stock_val = $StocksContainer.stock_price[color]
 	if remainder > 0 and stock_val - size == 0:
 		size -= 1
 	if size > 0:
 		print("destroy chain " + str(size))
 		_on_Board_stock_val_change(size * -1, color)
 
+
 master func _on_Board_stock_val_change(stock_delta, stock_color):
-	var cur_stock_val = $StocksContainer.stocks[stock_color]
+	var cur_stock_val = $StocksContainer.stock_price[stock_color]
 	if stock_delta == 0:
 		pay_isolated_bonus()
 		if cur_stock_val == 0:
 			stock_delta = 1
+	print("cur_stock_val: " + str(cur_stock_val) + " stock_delta " + str(stock_delta))
 	#Prevent stock from going 1-3
-	if cur_stock_val == 1 and stock_delta > 1:
+	if cur_stock_val == 1 * gamestate.SINGLE_STOCK_VAL and stock_delta > 1:
+		print("subtract 1 from stock delta")
 		stock_delta -= 1
 	$StocksContainer.stock_value_change(stock_delta, stock_color)
+	print("paying players")
 	for p_id in player_turn_order:
 		var player = get_player_node(p_id)
 		if stock_delta > 0 or (stock_delta < 0 and p_id != get_current_player()):
@@ -256,13 +259,21 @@ master func _on_Board_stock_val_change(stock_delta, stock_color):
 				players_in_debt.push_front(p_id)
 	if stock_delta > 0:
 		pay_stock_bonus(stock_color)
+
+
+master func remove_player_from_game(p_id):
+	pass
+
+
+master func is_player_broke(player):
+	pass
 	
-	
+ 
 #Current Player paid bonus when stock reaches new value equal to new value	
 master func pay_stock_bonus(stock_color):
-	var cur_stock_val = $StocksContainer.stocks[stock_color]
+	var cur_stock_val = $StocksContainer.stock_price[stock_color]
 	var cur_player = get_current_player()
-	var bonus = cur_stock_val * gamestate.SINGLE_STOCK_VAL
+	var bonus = cur_stock_val
 	print("stock price bonus" + str(bonus))
 	get_player_node(cur_player).rpc("update_money", bonus)			
 
@@ -272,3 +283,8 @@ master func pay_isolated_bonus():
 	var bonus = gamestate.SINGLE_STOCK_VAL
 	print("isolated bonus" + str(bonus))
 	get_player_node(cur_player).rpc("update_money", bonus)		
+
+
+func game_over():
+	print("world game over")
+	pass # Replace with function body.

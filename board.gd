@@ -116,12 +116,15 @@ master func get_stock_increase(x, y, color):
 					is_solo = false
 			if is_solo:
 				solo_tiles += 1
+	print('stock increase: ' + str(base_increase + solo_tiles))
 	return base_increase + solo_tiles
 
 
 remotesync func end_phase_ui_update():
-	$RollVBox.hide()
-	$EndTurn.show()
+	$RollVBox/Roll.hide()
+	$RollVBox/StockChoices.hide()
+	$RollVBox/Dice.hide()
+	$RollVBox/EndTurn.show()
 
 
 func get_building_chain(x, y, color):
@@ -199,6 +202,7 @@ func get_color_from_num(color_num):
 remotesync func dice_rolled(quadrant, color_num):
 	$RollVBox/DiceRoll.play()
 	$RollVBox/StockChoices.hide()	
+	$RollVBox/Roll.hide()
 	quadrant_roll = quadrant
 	color_roll = get_color_from_num(color_num)
 	var frame = 0
@@ -237,8 +241,10 @@ func _on_StockChoices_stock_picked(color):
 	color_roll = color				
 
 remotesync func begin_turn():
-	$RollVBox.show()
-	$EndTurn.hide()
+	$RollVBox/Roll.show()
+	$RollVBox/StockChoices.hide()
+	$RollVBox/Dice.show()
+	$RollVBox/EndTurn.hide()
 
 func _on_EndTurn_button_up():
 	emit_signal("end_turn")

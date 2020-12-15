@@ -1,15 +1,25 @@
 extends VBoxContainer
 
 signal trade_stock()
+signal game_over()
 
 var buys_left = 0
+const STOCK_START_COUNT = 22
+const MAX_STOCK_VALUE = 15000
 # Stock counts in id:number.
-var stocks = {
+var stock_price = {
 	gamestate.Stock_Color.YELLOW: 0,
 	gamestate.Stock_Color.RED: 0,
 	gamestate.Stock_Color.BLUE: 0,
 	gamestate.Stock_Color.GREEN: 0,
 }
+var stocks_left = {
+	gamestate.Stock_Color.YELLOW: STOCK_START_COUNT,
+	gamestate.Stock_Color.RED: STOCK_START_COUNT,
+	gamestate.Stock_Color.BLUE: STOCK_START_COUNT,
+	gamestate.Stock_Color.GREEN: STOCK_START_COUNT,
+}
+
 
 
 # Called when the node enters the scene tree for the first time.
@@ -18,6 +28,9 @@ func _ready():
 
 
 master func stock_value_change(stock_delta, stock_color):
+	if stock_price[stock_color] + stock_delta > MAX_STOCK_VALUE:
+		print("we hit max stock value")
+		emit_signal("game_over")
 	rpc("set_stock", stock_delta, stock_color)
 
 
@@ -28,15 +41,27 @@ remotesync func set_buys(buys, max_buys):
 
 remotesync func set_stock(stock_delta, stock_color):
 	print("stock changed: " + str(stock_delta))
-	stocks[stock_color] += stock_delta
-	$RedStock.text = "$" + str(stocks[gamestate.Stock_Color.RED] * gamestate.SINGLE_STOCK_VAL)
-	$BlueStock.text = "$" + str(stocks[gamestate.Stock_Color.BLUE] * gamestate.SINGLE_STOCK_VAL)
-	$GreenStock.text = "$" + str(stocks[gamestate.Stock_Color.GREEN] * gamestate.SINGLE_STOCK_VAL)
-	$YellowStock.text = "$" + str(stocks[gamestate.Stock_Color.YELLOW] * gamestate.SINGLE_STOCK_VAL)	
+	stock_price[stock_color] += stock_delta * gamestate.SINGLE_STOCK_VAL
+	$RedStock.text = "$" + str(stock_price[gamestate.Stock_Color.RED])
+	$BlueStock.text = "$" + str(stock_price[gamestate.Stock_Color.BLUE])
+	$GreenStock.text = "$" + str(stock_price[gamestate.Stock_Color.GREEN])
+	$YellowStock.text = "$" + str(stock_price[gamestate.Stock_Color.YELLOW])	
 
+
+remotesync func stock_trade(amount, stock_color):
+	stocks_left[stock_color] += amount
+	var new_text = "(" + str(stocks_left[stock_color]) + ")"
+	if stock_color == gamestate.Stock_Color.RED:
+		$HBoxContainer/Red.text = new_text
+	elif stock_color == gamestate.Stock_Color.BLUE:
+		$HBoxContainer2/Blue.text = new_text
+	elif stock_color == gamestate.Stock_Color.GREEN:
+		$HBoxContainer4/Green.text = new_text
+	elif stock_color == gamestate.Stock_Color.YELLOW:
+		$HBoxContainer3/Yellow.text = new_text		
 
 func trade_stock(stock_color, amount):
-	var price = stocks[stock_color]
+	var price = stock_price[stock_color]
 	emit_signal("trade_stock", stock_color, price, amount)
 
 func _red_buy():

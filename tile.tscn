@@ -1,4 +1,4 @@
-[gd_scene load_steps=85 format=2]
+[gd_scene load_steps=86 format=2]
 
 [ext_resource path="res://Fonts/new_dynamicfont.tres" type="DynamicFont" id=1]
 [ext_resource path="res://Art/lightblue.png" type="Texture" id=2]
@@ -83,6 +83,7 @@
 [ext_resource path="res://Art/Explosion4/0005.png" type="Texture" id=81]
 [ext_resource path="res://Art/Explosion4/0015.png" type="Texture" id=82]
 [ext_resource path="res://Art/Explosion4/0007.png" type="Texture" id=83]
+[ext_resource path="res://Art/blue_hover.png" type="Texture" id=84]
 
 [sub_resource type="SpriteFrames" id=1]
 animations = [ {
@@ -111,6 +112,7 @@ animations = [ {
 margin_right = 32.0
 margin_bottom = 32.0
 texture_normal = ExtResource( 2 )
+texture_hover = ExtResource( 84 )
 script = ExtResource( 3 )
 __meta__ = {
 "_edit_use_anchors_": false,

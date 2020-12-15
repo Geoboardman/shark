@@ -177,7 +177,17 @@ __meta__ = {
 [node name="Tiles_Container" type="ColorRect" parent="."]
 margin_right = 108.0
 
-[node name="EndTurn" type="Button" parent="."]
+[node name="RollVBox" type="Panel" parent="."]
+margin_right = 200.0
+margin_bottom = 250.0
+size_flags_horizontal = 2
+size_flags_vertical = 2
+custom_styles/panel = SubResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="EndTurn" type="Button" parent="RollVBox"]
 visible = false
 margin_left = -8.8194
 margin_top = 71.8154
@@ -185,16 +195,6 @@ margin_right = 99.1806
 margin_bottom = 96.8154
 custom_fonts/font = ExtResource( 2 )
 text = "End Turn"
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="RollVBox" type="Panel" parent="."]
-margin_right = 200.0
-margin_bottom = 250.0
-size_flags_horizontal = 2
-size_flags_vertical = 2
-custom_styles/panel = SubResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -225,6 +225,6 @@ frame = 15
 
 [node name="DiceRoll" type="AudioStreamPlayer" parent="RollVBox"]
 stream = ExtResource( 5 )
-[connection signal="button_up" from="EndTurn" to="." method="_on_EndTurn_button_up"]
+[connection signal="button_up" from="RollVBox/EndTurn" to="." method="_on_EndTurn_button_up"]
 [connection signal="button_up" from="RollVBox/Roll" to="." method="_on_Roll_button_up"]
 [connection signal="stock_picked" from="RollVBox/StockChoices" to="." method="_on_StockChoices_stock_picked"]
