@@ -1,17 +1,16 @@
 extends VBoxContainer
 
 signal trade_stock()
-signal game_over()
 
 var buys_left = 0
 const STOCK_START_COUNT = 22
 const MAX_STOCK_VALUE = 15000
 # Stock counts in id:number.
 var stock_price = {
-	gamestate.Stock_Color.YELLOW: 0,
-	gamestate.Stock_Color.RED: 0,
-	gamestate.Stock_Color.BLUE: 0,
-	gamestate.Stock_Color.GREEN: 0,
+	gamestate.Stock_Color.YELLOW: 14000,
+	gamestate.Stock_Color.RED: 14000,
+	gamestate.Stock_Color.BLUE: 14000,
+	gamestate.Stock_Color.GREEN: 14000,
 }
 var stocks_left = {
 	gamestate.Stock_Color.YELLOW: STOCK_START_COUNT,
@@ -27,10 +26,12 @@ func _ready():
 	pass
 
 
+master func is_stock_maxed(stock_color):
+	if stock_price[stock_color] >= MAX_STOCK_VALUE:
+		return true
+	return false
+
 master func stock_value_change(stock_delta, stock_color):
-	if stock_price[stock_color] + stock_delta > MAX_STOCK_VALUE:
-		print("we hit max stock value")
-		emit_signal("game_over")
 	rpc("set_stock", stock_delta, stock_color)
 
 

@@ -63,3 +63,7 @@ master func stock_value_change(stock_delta, stock_color):
 		var money_delta = stocks[stock_color] * stock_delta * gamestate.SINGLE_STOCK_VAL
 		print("money delta: " + str(money_delta))
 		rpc("update_money", money_delta)
+
+
+remotesync func set_final_score(score):
+	pass

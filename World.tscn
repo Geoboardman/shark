@@ -190,7 +190,6 @@ __meta__ = {
 [connection signal="place_building" from="Board" to="." method="_on_Board_place_building"]
 [connection signal="roll_dice" from="Board" to="." method="request_roll_dice"]
 [connection signal="stock_val_change" from="Board" to="." method="_on_Board_stock_val_change"]
-[connection signal="game_over" from="StocksContainer" to="." method="game_over"]
 [connection signal="trade_stock" from="StocksContainer" to="." method="trade_stock"]
 [connection signal="button_up" from="StocksContainer/HBoxContainer/Buy" to="StocksContainer" method="_red_buy"]
 [connection signal="button_up" from="StocksContainer/HBoxContainer/Sell" to="StocksContainer" method="_red_sell"]

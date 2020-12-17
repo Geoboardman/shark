@@ -1,7 +1,7 @@
 extends Control
 
 var current_player = -1
-enum Turn_Phase {ROLL, PLACEMENT, SELL, END}
+enum Turn_Phase {ROLL, PLACEMENT, SELL, END, GAME_OVER}
 var current_phase = Turn_Phase.ROLL
 var player_turn_order = []
 var players_in_debt = []
@@ -259,7 +259,21 @@ master func _on_Board_stock_val_change(stock_delta, stock_color):
 				players_in_debt.push_front(p_id)
 	if stock_delta > 0:
 		pay_stock_bonus(stock_color)
+	if $StocksContainer.is_stock_maxed(stock_color):
+		game_over()
 
+master func game_over():
+	print("game is over")
+	rpc("update_turn_phase", Turn_Phase.GAME_OVER)
+
+
+master func calculate_totals():
+	for p_id in player_turn_order:
+		var player = get_player_node(p_id)
+		var total = player.money
+		for color in gamestate.Stock_Color:
+			total += player.stock[color] * $StocksContainer.stock_price[color]
+		player.rpc("set_final_score", total)
 
 master func remove_player_from_game(p_id):
 	pass
@@ -283,8 +297,3 @@ master func pay_isolated_bonus():
 	var bonus = gamestate.SINGLE_STOCK_VAL
 	print("isolated bonus" + str(bonus))
 	get_player_node(cur_player).rpc("update_money", bonus)		
-
-
-func game_over():
-	print("world game over")
-	pass # Replace with function body.
