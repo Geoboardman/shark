@@ -248,3 +248,11 @@ remotesync func begin_turn():
 
 func _on_EndTurn_button_up():
 	emit_signal("end_turn")
+
+remotesync func game_over(player_name):
+	$RollVBox/Winner.text = str(player_name) + " Wins!!!"
+	$RollVBox/Winner.show()
+	$RollVBox/Roll.show()
+	$RollVBox/StockChoices.hide()
+	$RollVBox/Dice.hide()
+	$RollVBox/EndTurn.hide()

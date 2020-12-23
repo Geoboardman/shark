@@ -265,15 +265,23 @@ master func _on_Board_stock_val_change(stock_delta, stock_color):
 master func game_over():
 	print("game is over")
 	rpc("update_turn_phase", Turn_Phase.GAME_OVER)
-
+	calculate_totals()	
 
 master func calculate_totals():
+	var winner = null
 	for p_id in player_turn_order:
 		var player = get_player_node(p_id)
-		var total = player.money
+		var score = player.money
 		for color in gamestate.Stock_Color:
-			total += player.stock[color] * $StocksContainer.stock_price[color]
-		player.rpc("set_final_score", total)
+			print(color)
+			score += player.stocks[gamestate.Stock_Color[color]] * $StocksContainer.stock_price[gamestate.Stock_Color[color]]
+		player.rpc("set_final_score", score)
+		if winner == null:
+			winner = player
+		elif winner.final_score < score:
+			winner = player
+	$Board.rpc("game_over", winner.player_name)
+
 
 master func remove_player_from_game(p_id):
 	pass
@@ -296,4 +304,4 @@ master func pay_isolated_bonus():
 	var cur_player = get_current_player()
 	var bonus = gamestate.SINGLE_STOCK_VAL
 	print("isolated bonus" + str(bonus))
-	get_player_node(cur_player).rpc("update_money", bonus)		
+	get_player_node(cur_player).rpc("update_money", bonus)

@@ -3,6 +3,7 @@ extends Control
 var highlight = load("res://PlayerHighlight.tres")
 var player_name = "player name"
 var money = 0
+var final_score = 0
 # Stock counts in id:number.
 var stocks = {
 	gamestate.Stock_Color.YELLOW: 0,
@@ -13,12 +14,12 @@ var stocks = {
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	$VCont/Name.text = player_name
+	$HBox/VCont/Name.text = player_name
 	set_money(0)
-	$VCont/Stock/RedStock.text = str(stocks[gamestate.Stock_Color.RED])
-	$VCont/Stock/BlueStock.text = str(stocks[gamestate.Stock_Color.BLUE])
-	$VCont/Stock/GreenStock.text = str(stocks[gamestate.Stock_Color.GREEN])
-	$VCont/Stock/YellowStock.text = str(stocks[gamestate.Stock_Color.YELLOW])
+	$HBox/VCont/Stock/RedStock.text = str(stocks[gamestate.Stock_Color.RED])
+	$HBox/VCont/Stock/BlueStock.text = str(stocks[gamestate.Stock_Color.BLUE])
+	$HBox/VCont/Stock/GreenStock.text = str(stocks[gamestate.Stock_Color.GREEN])
+	$HBox/VCont/Stock/YellowStock.text = str(stocks[gamestate.Stock_Color.YELLOW])
 
 func set_current_player(enable):
 	if enable:
@@ -28,19 +29,19 @@ func set_current_player(enable):
 
 func set_money(money_delta):
 	money += money_delta
-	$VCont/Money.text = "$" + str(money)
+	$HBox/VCont/Money.text = "$" + str(money)
 	if money < 0:
-		$VCont/Money.set("custom_colors/font_color", Color(1,0,0))
+		$HBox/VCont/Money.set("custom_colors/font_color", Color(1,0,0))
 	else:
-		$VCont/Money.set("custom_colors/font_color", Color(1,1,1))
+		$HBox/VCont/Money.set("custom_colors/font_color", Color(1,1,1))
 
 
 func set_stock(stock_color, stock_delta):
 	stocks[stock_color] += stock_delta
-	$VCont/Stock/RedStock.text = str(stocks[gamestate.Stock_Color.RED])
-	$VCont/Stock/BlueStock.text = str(stocks[gamestate.Stock_Color.BLUE])
-	$VCont/Stock/GreenStock.text = str(stocks[gamestate.Stock_Color.GREEN])
-	$VCont/Stock/YellowStock.text = str(stocks[gamestate.Stock_Color.YELLOW])	
+	$HBox/VCont/Stock/RedStock.text = str(stocks[gamestate.Stock_Color.RED])
+	$HBox/VCont/Stock/BlueStock.text = str(stocks[gamestate.Stock_Color.BLUE])
+	$HBox/VCont/Stock/GreenStock.text = str(stocks[gamestate.Stock_Color.GREEN])
+	$HBox/VCont/Stock/YellowStock.text = str(stocks[gamestate.Stock_Color.YELLOW])	
 
 remotesync func buy_stock(stock_color, stock_price, amount):
 	print("player buy stock")
@@ -64,6 +65,7 @@ master func stock_value_change(stock_delta, stock_color):
 		print("money delta: " + str(money_delta))
 		rpc("update_money", money_delta)
 
-
 remotesync func set_final_score(score):
-	pass
+	final_score = score
+	$HBox/FinalScore.show()
+	$HBox/FinalScore.text = "Final Score: $" + str(score);
