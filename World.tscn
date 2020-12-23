@@ -35,6 +35,8 @@ __meta__ = {
 [node name="Buys" type="Label" parent="StocksContainer"]
 margin_right = 109.0
 margin_bottom = 19.0
+hint_tooltip = "You are only allowed to buy 5 stocks per turn"
+mouse_filter = 1
 custom_fonts/font = ExtResource( 5 )
 text = "Buys 0/5"
 
@@ -42,6 +44,8 @@ text = "Buys 0/5"
 margin_top = 23.0
 margin_right = 109.0
 margin_bottom = 45.0
+hint_tooltip = "Stocks at 0 cannot be purchased"
+mouse_filter = 0
 custom_fonts/font = ExtResource( 3 )
 text = "Stock Prices"
 
@@ -61,6 +65,8 @@ margin_bottom = 92.0
 [node name="Red" type="Label" parent="StocksContainer/HBoxContainer"]
 margin_right = 30.0
 margin_bottom = 19.0
+hint_tooltip = "Red Stocks Available"
+mouse_filter = 0
 custom_fonts/font = ExtResource( 5 )
 custom_colors/font_color = Color( 1, 0, 0, 1 )
 text = "(22)"
@@ -96,6 +102,8 @@ margin_bottom = 139.0
 [node name="Blue" type="Label" parent="StocksContainer/HBoxContainer2"]
 margin_right = 30.0
 margin_bottom = 19.0
+hint_tooltip = "Blue Stocks Available"
+mouse_filter = 0
 custom_fonts/font = ExtResource( 5 )
 custom_colors/font_color = Color( 0, 0.0901961, 1, 1 )
 text = "(22)"
@@ -131,6 +139,8 @@ margin_bottom = 186.0
 [node name="Green" type="Label" parent="StocksContainer/HBoxContainer4"]
 margin_right = 30.0
 margin_bottom = 19.0
+hint_tooltip = "Green Stocks Available"
+mouse_filter = 0
 custom_fonts/font = ExtResource( 5 )
 custom_colors/font_color = Color( 0, 1, 0.321569, 1 )
 text = "(22)"
@@ -166,6 +176,8 @@ margin_bottom = 233.0
 [node name="Yellow" type="Label" parent="StocksContainer/HBoxContainer3"]
 margin_right = 30.0
 margin_bottom = 19.0
+hint_tooltip = "Yellow Stocks Available"
+mouse_filter = 0
 custom_fonts/font = ExtResource( 5 )
 custom_colors/font_color = Color( 0.968627, 1, 0, 1 )
 text = "(22)"
@@ -187,6 +199,7 @@ __meta__ = {
 [connection signal="chain_destroyed" from="Board" to="." method="chain_destroyed"]
 [connection signal="end_placement_phase" from="Board" to="." method="_on_Board_end_placement_phase"]
 [connection signal="end_turn" from="Board" to="." method="_on_Board_end_turn"]
+[connection signal="game_over" from="Board" to="." method="game_over"]
 [connection signal="place_building" from="Board" to="." method="_on_Board_place_building"]
 [connection signal="roll_dice" from="Board" to="." method="request_roll_dice"]
 [connection signal="stock_val_change" from="Board" to="." method="_on_Board_stock_val_change"]

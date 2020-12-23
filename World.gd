@@ -154,6 +154,9 @@ master func make_trade(p_id, stock_color, stock_price, amount):
 			update_total_buys(stock_color, amount)			
 			player.rpc("buy_stock", stock_color, stock_price, amount)
 			$StocksContainer.rpc("stock_trade", amount*-1, stock_color)
+		#Check if all stocks have been purchased
+		if $StocksContainer.all_stocks_gone():
+			game_over()
 	elif amount < 0:
 		var stocks_available = player.stocks[stock_color]
 		if stocks_available >= amount * -1:

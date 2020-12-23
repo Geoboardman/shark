@@ -1,5 +1,6 @@
 extends Panel
 
+const MAX_BUILDINGS = 20
 const TILE = preload("res://Tile.tscn")
 const tile_width = 32;
 export var ROWS = 12;
@@ -7,11 +8,18 @@ export var COLUMNS = 12;
 var tileArray = []
 var quadrant_roll
 var color_roll
-var total_remaining = {
+var buildings_on_board = {
 	gamestate.Stock_Color.YELLOW: 0,
 	gamestate.Stock_Color.RED: 0,
 	gamestate.Stock_Color.BLUE: 0,
 	gamestate.Stock_Color.GREEN: 0,
+}
+
+var buildings_left = {
+	gamestate.Stock_Color.YELLOW: MAX_BUILDINGS,
+	gamestate.Stock_Color.RED: MAX_BUILDINGS,
+	gamestate.Stock_Color.BLUE: MAX_BUILDINGS,
+	gamestate.Stock_Color.GREEN: MAX_BUILDINGS,
 }
 
 signal roll_dice()
@@ -20,6 +28,7 @@ signal end_turn()
 signal end_placement_phase()
 signal stock_val_change()
 signal chain_destroyed()
+signal game_over()
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -61,7 +70,7 @@ master func request_place_building(x, y, color):
 		return
 	if tile.color != null:
 		print("already has building")
-		return		
+		return
 	var adjacent = get_adjacent_tiles(x, y)
 	for adj in adjacent:
 		if adj.color != null and adj.color != color:
@@ -88,7 +97,12 @@ master func request_place_building(x, y, color):
 		for chain in enemy_chains:
 			var chain_color = chain[0].color
 			destroy_chain(chain)
-			emit_signal("chain_destroyed", chain.size(), chain_color, total_remaining[chain_color])
+			emit_signal("chain_destroyed", chain.size(), chain_color, buildings_on_board[chain_color])
+	#Update buildings left
+	buildings_left[color] -= 1
+	if buildings_left[color] < 1:
+		emit_signal("game_over")
+		return
 	#Move to next phase
 	emit_signal("end_placement_phase")
 	rpc("end_phase_ui_update")
@@ -96,9 +110,9 @@ master func request_place_building(x, y, color):
 
 master func destroy_chain(chain):
 	var color = chain[0].color
-	total_remaining[color] -= chain.size()
-	if total_remaining[color] < 0:
-		total_remaining[color] = 0
+	buildings_on_board[color] -= chain.size()
+	if buildings_on_board[color] < 0:
+		buildings_on_board[color] = 0
 	for tile in chain:
 		tile.rpc("destroy")
 
@@ -144,7 +158,8 @@ func get_building_chain(x, y, color):
 remotesync func building_placed(x, y, color):
 	print("building placed: " + str(color))
 	tileArray[x][y].set_color(color)
-	total_remaining[color] += 1
+	buildings_on_board[color] += 1
+	buildings_left[color] -= 1
 
 
 func tile_clicked(x, y):

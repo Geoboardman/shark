@@ -7,10 +7,10 @@ const STOCK_START_COUNT = 22
 const MAX_STOCK_VALUE = 15000
 # Stock counts in id:number.
 var stock_price = {
-	gamestate.Stock_Color.YELLOW: 14000,
-	gamestate.Stock_Color.RED: 14000,
-	gamestate.Stock_Color.BLUE: 14000,
-	gamestate.Stock_Color.GREEN: 14000,
+	gamestate.Stock_Color.YELLOW: 0,
+	gamestate.Stock_Color.RED: 0,
+	gamestate.Stock_Color.BLUE: 0,
+	gamestate.Stock_Color.GREEN: 0,
 }
 var stocks_left = {
 	gamestate.Stock_Color.YELLOW: STOCK_START_COUNT,
@@ -18,8 +18,6 @@ var stocks_left = {
 	gamestate.Stock_Color.BLUE: STOCK_START_COUNT,
 	gamestate.Stock_Color.GREEN: STOCK_START_COUNT,
 }
-
-
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -36,8 +34,7 @@ master func stock_value_change(stock_delta, stock_color):
 
 
 remotesync func set_buys(buys, max_buys):
-	buys_left = buys
-	$Buys.text = "Buys " + str(buys_left) + "/" + str(max_buys)
+	$Buys.text = "Buys " + str(buys) + "/" + str(max_buys)
 
 
 remotesync func set_stock(stock_delta, stock_color):
@@ -50,6 +47,7 @@ remotesync func set_stock(stock_delta, stock_color):
 
 
 remotesync func stock_trade(amount, stock_color):
+	print("stock_trade " + str(amount))
 	stocks_left[stock_color] += amount
 	var new_text = "(" + str(stocks_left[stock_color]) + ")"
 	if stock_color == gamestate.Stock_Color.RED:
@@ -64,6 +62,14 @@ remotesync func stock_trade(amount, stock_color):
 func trade_stock(stock_color, amount):
 	var price = stock_price[stock_color]
 	emit_signal("trade_stock", stock_color, price, amount)
+
+master func all_stocks_gone():
+	for stock in stocks_left.keys():
+		if stocks_left[stock] > 0:
+			print("we still have stocks")
+			return false
+	print("yes all stocks gone")
+	return true
 
 func _red_buy():
 	trade_stock(gamestate.Stock_Color.RED, 1)
