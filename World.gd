@@ -212,6 +212,9 @@ master func end_turn():
 	var sender_id = get_tree().get_rpc_sender_id()
 	if not action_check(sender_id, [get_current_player()], [Turn_Phase.END]):
 		return
+	var cur_player = get_current_player()
+	var player = get_player_node(cur_player)		
+	add_event_text(player.player_name + " Ended Turn")		
 	rpc("next_player")
 	reset_buys()	
 	rpc("update_turn_phase", Turn_Phase.ROLL)
@@ -253,7 +256,7 @@ master func _on_Board_stock_val_change(stock_delta, stock_color):
 	if cur_stock_val == 1 * gamestate.SINGLE_STOCK_VAL and stock_delta > 1:
 		print("subtract 1 from stock delta")
 		stock_delta -= 1
-	$StocksContainer.stock_value_change(stock_delta, stock_color)
+	$StocksContainer.stock_value_change(stock_delta, stock_color)	
 	print("paying players")
 	for p_id in player_turn_order:
 		var player = get_player_node(p_id)
@@ -325,3 +328,9 @@ master func add_event_text(event):
 
 remotesync func send_event_text(event):
 	$Events/Text.text += "\n" + str(event)
+
+
+master func building_placed_add_event(color):
+	var cur_player = get_current_player()
+	var player = get_player_node(cur_player)
+	add_event_text(player.player_name + " Placed " + gamestate.Stock_Color.keys()[color] + " building")

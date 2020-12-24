@@ -29,6 +29,7 @@ signal end_placement_phase()
 signal stock_val_change()
 signal chain_destroyed()
 signal game_over()
+signal building_placed_event()
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -87,6 +88,7 @@ master func request_place_building(x, y, color):
 				print("can't place next to enemy chain")
 				return
 	#SUCCESS!
+	emit_signal("building_placed_event", color)
 	var stock_incr = get_stock_increase(x, y, color)
 	#Payout players
 	emit_signal("stock_val_change", stock_incr, color)

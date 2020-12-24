@@ -219,6 +219,7 @@ text = "Events Go Here"
 __meta__ = {
 "_edit_use_anchors_": false
 }
+[connection signal="building_placed_event" from="Board" to="." method="building_placed_add_event"]
 [connection signal="chain_destroyed" from="Board" to="." method="chain_destroyed"]
 [connection signal="end_placement_phase" from="Board" to="." method="_on_Board_end_placement_phase"]
 [connection signal="end_turn" from="Board" to="." method="_on_Board_end_turn"]

@@ -66,7 +66,7 @@ master func stock_value_change(stock_delta, stock_color):
 		var money_delta = stocks[stock_color] * stock_delta * gamestate.SINGLE_STOCK_VAL
 		rpc("update_money", money_delta)
 		if money_delta > 0:
-			emit_signal("add_event_text", player_name + " paid " + str(money_delta) + " on " + str(gamestate.Stock_Color.keys()[stock_color]) + " stock")
+			emit_signal("add_event_text", player_name + " paid " + str(money_delta) + " for " + str(gamestate.Stock_Color.keys()[stock_color]) + " stock")
 		else:
 			emit_signal("add_event_text", player_name + " lost " + str(money_delta) + " on " + str(gamestate.Stock_Color.keys()[stock_color]) + " stock")
 
