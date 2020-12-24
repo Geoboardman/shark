@@ -113,6 +113,7 @@ remotesync func pre_start_game(first):
 		player.player_name = players[p].name
 		player.set_stock(players[p].stock, 1)
 		player.set_network_master(1) #set unique id as master.
+		player.connect("add_event_text", world, "add_event_text")
 		world.get_node("Players").add_child(player)
 	world.set_current_player(first)
 	if not get_tree().is_network_server():

@@ -153,6 +153,7 @@ master func make_trade(p_id, stock_color, stock_price, amount):
 		if money >= stock_price * amount:
 			update_total_buys(stock_color, amount)			
 			player.rpc("buy_stock", stock_color, stock_price, amount)
+			add_event_text(player.player_name + " bought " + str(amount) + " " + str(gamestate.Stock_Color.keys()[stock_color]) + " stock")
 			$StocksContainer.rpc("stock_trade", amount*-1, stock_color)
 		#Check if all stocks have been purchased
 		if $StocksContainer.all_stocks_gone():
@@ -162,6 +163,7 @@ master func make_trade(p_id, stock_color, stock_price, amount):
 		if stocks_available >= amount * -1:
 			update_total_buys(stock_color, amount)
 			player.rpc("sell_stock",stock_color, stock_price, amount)
+			add_event_text(player.player_name + " sold " + str(amount) + " " + str(gamestate.Stock_Color.keys()[stock_color]) + " stock")
 			$StocksContainer.rpc("stock_trade", amount*-1, stock_color)
 			if current_phase == Turn_Phase.SELL and player.money >= 0:
 				var p_index = players_in_debt.find(p_id)
@@ -266,7 +268,7 @@ master func _on_Board_stock_val_change(stock_delta, stock_color):
 		game_over()
 
 master func game_over():
-	print("game is over")
+	add_event_text("Game Over!!")
 	rpc("update_turn_phase", Turn_Phase.GAME_OVER)
 	calculate_totals()	
 
@@ -291,7 +293,12 @@ master func remove_player_from_game(p_id):
 
 
 master func is_player_broke(player):
-	pass
+		var money = player.money
+		for color in gamestate.Stock_Color:
+			money += player.stocks[gamestate.Stock_Color[color]] * $StocksContainer.stock_price[gamestate.Stock_Color[color]]
+		if money >= 0:
+			return false
+		return true
 	
  
 #Current Player paid bonus when stock reaches new value equal to new value	
@@ -300,11 +307,21 @@ master func pay_stock_bonus(stock_color):
 	var cur_player = get_current_player()
 	var bonus = cur_stock_val
 	print("stock price bonus" + str(bonus))
-	get_player_node(cur_player).rpc("update_money", bonus)			
+	var player = get_player_node(cur_player)
+	player.rpc("update_money", bonus)
+	add_event_text(player.player_name + " paid " + str(bonus) + " stock bonus")		
 
 
 master func pay_isolated_bonus():
 	var cur_player = get_current_player()
 	var bonus = gamestate.SINGLE_STOCK_VAL
 	print("isolated bonus" + str(bonus))
-	get_player_node(cur_player).rpc("update_money", bonus)
+	var player = get_player_node(cur_player)
+	player.rpc("update_money", bonus)
+	add_event_text(player.player_name + " paid " + str(bonus) + " isolation bonus")
+
+master func add_event_text(event):
+	rpc("send_event_text", event)
+
+remotesync func send_event_text(event):
+	$Events/Text.text += "\n" + str(event)

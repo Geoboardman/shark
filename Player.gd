@@ -12,6 +12,8 @@ var stocks = {
 	gamestate.Stock_Color.GREEN: 0,
 }
 
+signal add_event_text()
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	$HBox/VCont/Name.text = player_name
@@ -60,10 +62,13 @@ remotesync func update_money(delta):
 
 master func stock_value_change(stock_delta, stock_color):
 	if stocks[stock_color] > 0:
-		print("we have stock: " + str(stocks[stock_color]))
+		print("i have those stocks")
 		var money_delta = stocks[stock_color] * stock_delta * gamestate.SINGLE_STOCK_VAL
-		print("money delta: " + str(money_delta))
 		rpc("update_money", money_delta)
+		if money_delta > 0:
+			emit_signal("add_event_text", player_name + " paid " + str(money_delta) + " on " + str(gamestate.Stock_Color.keys()[stock_color]) + " stock")
+		else:
+			emit_signal("add_event_text", player_name + " lost " + str(money_delta) + " on " + str(gamestate.Stock_Color.keys()[stock_color]) + " stock")
 
 remotesync func set_final_score(score):
 	final_score = score
