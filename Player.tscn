@@ -49,6 +49,15 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="Eliminated" type="Label" parent="HBox/VCont"]
+visible = false
+margin_top = 78.0
+margin_right = 101.0
+margin_bottom = 97.0
+custom_fonts/font = ExtResource( 3 )
+custom_colors/font_color = Color( 1, 0, 0, 1 )
+text = "ELIMINATED"
+
 [node name="Stock" type="HBoxContainer" parent="HBox/VCont"]
 margin_top = 78.0
 margin_right = 101.0

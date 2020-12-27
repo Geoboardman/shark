@@ -62,22 +62,32 @@ func get_adjacent_tiles(x, y):
 	return adjacent
 
 
-master func request_place_building(x, y, color):
-	var enemy_chains = []
-	print("x: " + str(x) + " y: " + str(y))
+master func valid_building_placement(x, y, color):
 	var tile = tileArray[x][y]
 	if tile.quadrant != quadrant_roll:
 		print("quadrant wrong " + str(tile.quadrant) + " " + str("quadrant roll: ") + str(quadrant_roll))
-		return
+		return false
 	if tile.color != null:
 		print("already has building")
-		return
+		return	false
+	return true
+	
+master func find_enemy_chains(x, y, color):
+	var enemy_chains = []
 	var adjacent = get_adjacent_tiles(x, y)
 	for adj in adjacent:
 		if adj.color != null and adj.color != color:
 			print("adjacent has building")
 			var enemy = get_building_chain(adj.x, adj.y, adj.color)
 			enemy_chains.push_back(enemy)
+	return enemy_chains
+
+master func request_place_building(x, y, color):
+	var enemy_chains = []
+	print("x: " + str(x) + " y: " + str(y))
+	if not valid_building_placement(x, y, color):
+		return
+	enemy_chains = find_enemy_chains(x, y, color)
 	if enemy_chains.size() > 0:
 		#Hacky code, updating color to get the theoretical chain if building was placed already
 		tileArray[x][y].color = color
@@ -104,10 +114,10 @@ master func request_place_building(x, y, color):
 	buildings_left[color] -= 1
 	if buildings_left[color] < 1:
 		emit_signal("game_over")
-		return
-	#Move to next phase
-	emit_signal("end_placement_phase")
-	rpc("end_phase_ui_update")
+	else:
+		#Move to next phase
+		emit_signal("end_placement_phase")
+		rpc("end_phase_ui_update")
 
 
 master func destroy_chain(chain):
@@ -218,6 +228,7 @@ func get_color_from_num(color_num):
 
 remotesync func dice_rolled(quadrant, color_num):
 	$RollVBox/DiceRoll.play()
+	$RollVBox/Dice.show()
 	$RollVBox/StockChoices.hide()	
 	$RollVBox/Roll.hide()
 	quadrant_roll = quadrant
@@ -260,7 +271,7 @@ func _on_StockChoices_stock_picked(color):
 remotesync func begin_turn():
 	$RollVBox/Roll.show()
 	$RollVBox/StockChoices.hide()
-	$RollVBox/Dice.show()
+	$RollVBox/Dice.hide()
 	$RollVBox/EndTurn.hide()
 
 func _on_EndTurn_button_up():

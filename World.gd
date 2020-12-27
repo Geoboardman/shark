@@ -5,6 +5,7 @@ enum Turn_Phase {ROLL, PLACEMENT, SELL, END, GAME_OVER}
 var current_phase = Turn_Phase.ROLL
 var player_turn_order = []
 var players_in_debt = []
+var eliminated_players = []
 var rng = RandomNumberGenerator.new()
 const MAX_BUYS = 5
 var total_stock_buys = 0
@@ -226,6 +227,8 @@ remotesync func next_player():
 	if player_index > player_turn_order.size() - 1:
 		player_index = 0
 	set_current_player(player_index)
+	if player_index in eliminated_players:
+		next_player()	
 
 
 master func _on_Board_end_placement_phase():
@@ -235,14 +238,24 @@ master func _on_Board_end_placement_phase():
 		rpc("update_turn_phase", Turn_Phase.END)
 
 
-master func chain_destroyed(size, color, remainder):
+master func get_chain_val(size, color, remainder):
 	print("chain destroy called " + str(size) + " remain " + str(remainder))
+	var stock_delta = 0
 	var stock_val = $StocksContainer.stock_price[color]
-	if remainder > 0 and stock_val - size == 0:
-		size -= 1
-	if size > 0:
-		print("destroy chain " + str(size))
-		_on_Board_stock_val_change(size * -1, color)
+	if size > 1:
+		if remainder > 0 and stock_val == size * gamestate.SINGLE_STOCK_VAL:
+			return size -1
+		return size
+	else:
+		if remainder > 0:
+			return 0
+		return size
+
+
+master func chain_destroyed(size, color, remainder):
+	var chain_val = get_chain_val(size, color, remainder)
+	print("chain val: " + str(chain_val))
+	_on_Board_stock_val_change(chain_val * -1, color)
 
 
 master func _on_Board_stock_val_change(stock_delta, stock_color):
@@ -264,7 +277,10 @@ master func _on_Board_stock_val_change(stock_delta, stock_color):
 			player.stock_value_change(stock_delta, stock_color)
 			if player.money < 0:
 				print("player is in debt")
-				players_in_debt.push_front(p_id)
+				if is_player_broke(player):
+					remove_player_from_game(p_id)
+				else:
+					players_in_debt.push_front(p_id)
 	if stock_delta > 0:
 		pay_stock_bonus(stock_color)
 	if $StocksContainer.is_stock_maxed(stock_color):
@@ -292,7 +308,11 @@ master func calculate_totals():
 
 
 master func remove_player_from_game(p_id):
-	pass
+	var player = get_player_node(p_id)
+	eliminated_players.push_front(p_id)
+	player.rpc("eliminated")
+	if player_turn_order.size() - eliminated_players.size() <= 1:
+		game_over()
 
 
 master func is_player_broke(player):

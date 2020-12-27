@@ -60,6 +60,15 @@ remotesync func sell_stock(stock_color, stock_price, amount):
 remotesync func update_money(delta):
 	set_money(delta)
 
+master func remove_player():
+	rpc("eliminated")
+
+remotesync func eliminated():
+	$HBox/VCont/Money.hide()
+	$HBox/VCont/Label.hide()
+	$HBox/VCont/Stock.hide()
+	$HBox/VCont/Eliminated.show()
+
 master func stock_value_change(stock_delta, stock_color):
 	if stocks[stock_color] > 0:
 		print("i have those stocks")
