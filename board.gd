@@ -51,7 +51,7 @@ func position_roll_btn():
 
 func get_adjacent_tiles(x, y):
 	var adjacent = []
-	if x > 1: #left
+	if x > 0: #left
 		adjacent.append(tileArray[x-1][y])
 	if x < COLUMNS-1: #right
 		adjacent.append(tileArray[x+1][y])
@@ -112,7 +112,9 @@ master func request_place_building(x, y, color):
 			emit_signal("chain_destroyed", chain.size(), chain_color, buildings_on_board[chain_color])
 	#Update buildings left
 	buildings_left[color] -= 1
+	print("one less building " + str(color) + " " + str(buildings_left[color]))
 	if buildings_left[color] < 1:
+		print("no more buildings")
 		emit_signal("game_over")
 	else:
 		#Move to next phase
@@ -127,6 +129,7 @@ master func destroy_chain(chain):
 		buildings_on_board[color] = 0
 	for tile in chain:
 		tile.rpc("destroy")
+
 
 master func get_stock_increase(x, y, color):
 	var solo_tiles = 0
@@ -171,7 +174,6 @@ remotesync func building_placed(x, y, color):
 	print("building placed: " + str(color))
 	tileArray[x][y].set_color(color)
 	buildings_on_board[color] += 1
-	buildings_left[color] -= 1
 
 
 func tile_clicked(x, y):

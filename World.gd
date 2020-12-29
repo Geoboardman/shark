@@ -158,6 +158,7 @@ master func make_trade(p_id, stock_color, stock_price, amount):
 			$StocksContainer.rpc("stock_trade", amount*-1, stock_color)
 		#Check if all stocks have been purchased
 		if $StocksContainer.all_stocks_gone():
+			print("all stocks gone")
 			game_over()
 	elif amount < 0:
 		var stocks_available = player.stocks[stock_color]
@@ -284,6 +285,7 @@ master func _on_Board_stock_val_change(stock_delta, stock_color):
 	if stock_delta > 0:
 		pay_stock_bonus(stock_color)
 	if $StocksContainer.is_stock_maxed(stock_color):
+		print("stock value maxed")
 		game_over()
 
 master func game_over():
@@ -312,6 +314,7 @@ master func remove_player_from_game(p_id):
 	eliminated_players.push_front(p_id)
 	player.rpc("eliminated")
 	if player_turn_order.size() - eliminated_players.size() <= 1:
+		print("only one player left game over")
 		game_over()
 
 
@@ -332,7 +335,7 @@ master func pay_stock_bonus(stock_color):
 	print("stock price bonus" + str(bonus))
 	var player = get_player_node(cur_player)
 	player.rpc("update_money", bonus)
-	add_event_text(player.player_name + " paid " + str(bonus) + " stock bonus")		
+	add_event_text(player.player_name + " paid $" + str(bonus) + " stock bonus")		
 
 
 master func pay_isolated_bonus():
@@ -341,13 +344,14 @@ master func pay_isolated_bonus():
 	print("isolated bonus" + str(bonus))
 	var player = get_player_node(cur_player)
 	player.rpc("update_money", bonus)
-	add_event_text(player.player_name + " paid " + str(bonus) + " isolation bonus")
+	add_event_text(player.player_name + " paid $" + str(bonus) + " isolation bonus")
 
 master func add_event_text(event):
 	rpc("send_event_text", event)
 
 remotesync func send_event_text(event):
-	$Events/Text.text += "\n" + str(event)
+	var cur_text = $Events/Text.text
+	$Events/Text.text = str(event) + "\n" + cur_text
 
 
 master func building_placed_add_event(color):
