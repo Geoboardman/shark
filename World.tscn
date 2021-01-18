@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://Board.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Fonts/size12.tres" type="DynamicFont" id=2]
@@ -6,6 +6,7 @@
 [ext_resource path="res://StocksContainer.gd" type="Script" id=4]
 [ext_resource path="res://Fonts/new_dynamicfont.tres" type="DynamicFont" id=5]
 [ext_resource path="res://World.gd" type="Script" id=6]
+[ext_resource path="res://Console.tscn" type="PackedScene" id=7]
 
 [node name="World" type="Control"]
 anchor_right = 1.0
@@ -219,6 +220,9 @@ text = "Events Go Here"
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="Console" parent="." instance=ExtResource( 7 )]
+visible = false
 [connection signal="building_placed_event" from="Board" to="." method="building_placed_add_event"]
 [connection signal="chain_destroyed" from="Board" to="." method="chain_destroyed"]
 [connection signal="end_placement_phase" from="Board" to="." method="_on_Board_end_placement_phase"]
@@ -236,3 +240,4 @@ __meta__ = {
 [connection signal="button_up" from="StocksContainer/HBoxContainer4/Sell" to="StocksContainer" method="_green_sell"]
 [connection signal="button_up" from="StocksContainer/HBoxContainer3/Buy" to="StocksContainer" method="_yellow_buy"]
 [connection signal="button_up" from="StocksContainer/HBoxContainer3/Sell" to="StocksContainer" method="_yellow_sell"]
+[connection signal="command_entered" from="Console" to="." method="_on_Console_command_entered"]

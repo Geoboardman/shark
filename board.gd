@@ -22,6 +22,10 @@ var buildings_left = {
 	gamestate.Stock_Color.GREEN: MAX_BUILDINGS,
 }
 
+#CHEATS
+var unlimited_building = false;
+
+#SIGNALS
 signal roll_dice()
 signal place_building()
 signal end_turn()
@@ -36,6 +40,10 @@ func _ready():
 	draw_board_tiles()
 	center_on_screen()
 	position_roll_btn()
+
+func set_unlimited_building():
+	unlimited_building = not unlimited_building
+	$RollVBox/StockChoices.show()
 
 
 func center_on_screen():
@@ -84,7 +92,7 @@ master func find_enemy_chains(x, y, color):
 
 master func request_place_building(x, y, color):
 	var enemy_chains = []
-	print("x: " + str(x) + " y: " + str(y))
+	print("request_place_building x: " + str(x) + " y: " + str(y))
 	if not valid_building_placement(x, y, color):
 		return
 	enemy_chains = find_enemy_chains(x, y, color)
@@ -108,8 +116,9 @@ master func request_place_building(x, y, color):
 	if enemy_chains.size() > 0:
 		for chain in enemy_chains:
 			var chain_color = chain[0].color
-			destroy_chain(chain)
-			emit_signal("chain_destroyed", chain.size(), chain_color, buildings_on_board[chain_color])
+			if chain_color != null:
+				destroy_chain(chain)
+				emit_signal("chain_destroyed", chain.size(), chain_color, buildings_on_board[chain_color])
 	#Update buildings left
 	buildings_left[color] -= 1
 	print("one less building " + str(color) + " " + str(buildings_left[color]))
@@ -118,12 +127,15 @@ master func request_place_building(x, y, color):
 		emit_signal("game_over")
 	else:
 		#Move to next phase
-		emit_signal("end_placement_phase")
-		rpc("end_phase_ui_update")
+		if not unlimited_building:
+			emit_signal("end_placement_phase")
+			rpc("end_phase_ui_update")
 
 
 master func destroy_chain(chain):
 	var color = chain[0].color
+	if color == null:
+		return
 	buildings_on_board[color] -= chain.size()
 	if buildings_on_board[color] < 0:
 		buildings_on_board[color] = 0

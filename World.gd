@@ -21,6 +21,12 @@ var stock_buys = {
 func _ready():
 	pass # Replace with function body.
 
+func _process(delta):
+	if Input.is_action_just_released("console"):
+		if $Console.visible:
+			$Console.hide();
+		else:
+			$Console.display();
 
 func get_current_player():
 	return player_turn_order[current_player]
@@ -241,7 +247,6 @@ master func _on_Board_end_placement_phase():
 
 master func get_chain_val(size, color, remainder):
 	print("chain destroy called " + str(size) + " remain " + str(remainder))
-	var stock_delta = 0
 	var stock_val = $StocksContainer.stock_price[color]
 	if size > 1:
 		if remainder > 0 and stock_val == size * gamestate.SINGLE_STOCK_VAL:
@@ -335,7 +340,7 @@ master func pay_stock_bonus(stock_color):
 	print("stock price bonus" + str(bonus))
 	var player = get_player_node(cur_player)
 	player.rpc("update_money", bonus)
-	add_event_text(player.player_name + " paid $" + str(bonus) + " stock bonus")		
+	add_event_text(player.player_name + " earned $" + str(bonus) + " stock bonus")		
 
 
 master func pay_isolated_bonus():
@@ -344,7 +349,7 @@ master func pay_isolated_bonus():
 	print("isolated bonus" + str(bonus))
 	var player = get_player_node(cur_player)
 	player.rpc("update_money", bonus)
-	add_event_text(player.player_name + " paid $" + str(bonus) + " isolation bonus")
+	add_event_text(player.player_name + " earned $" + str(bonus) + " isolation bonus")
 
 master func add_event_text(event):
 	rpc("send_event_text", event)
@@ -358,3 +363,10 @@ master func building_placed_add_event(color):
 	var cur_player = get_current_player()
 	var player = get_player_node(cur_player)
 	add_event_text(player.player_name + " Placed " + gamestate.Stock_Color.keys()[color] + " building")
+
+
+func _on_Console_command_entered(args):
+	if args.empty():
+		return
+	if args[0] == "builder":
+		$Board.set_unlimited_building()
