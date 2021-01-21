@@ -364,9 +364,39 @@ master func building_placed_add_event(color):
 	var player = get_player_node(cur_player)
 	add_event_text(player.player_name + " Placed " + gamestate.Stock_Color.keys()[color] + " building")
 
+func convert_string_to_color(color):
+	if color == "red":
+		return gamestate.Stock_Color.RED
+	elif color == "yellow":
+		return gamestate.Stock_Color.YELLOW
+	elif color == "green":
+		return gamestate.Stock_Color.GREEN				
+	elif color == "blue":
+		return gamestate.Stock_Color.BLUE	
+	return color
+
+remotesync func cheat_set_player_stock(pIndex, color, amount):
+	color = convert_string_to_color(color)
+	var player = get_player_node(player_turn_order[pIndex])
+	player.set_stock(color, amount)
+	pass
+
+remotesync func cheat_set_player_money(pIndex, amount):
+	var player_id = player_turn_order[pIndex]
+	var player = get_player_node(player_id)
+	player.set_money(amount)
 
 func _on_Console_command_entered(args):
 	if args.empty():
 		return
 	if args[0] == "builder":
 		$Board.set_unlimited_building()
+	if args[0] == "set_player_stock" and args.size() >= 4:
+		var pIndex = int(args[1])
+		var stock_color = args[2]
+		var amount = int(args[3])
+		rpc("cheat_set_player_stock", pIndex, stock_color, amount)
+	if args[0] == "set_player_money" and args.size() >= 3:
+		var pIndex = int(args[1])
+		var amount = int(args[2])
+		rpc("cheat_set_player_money", pIndex, amount)

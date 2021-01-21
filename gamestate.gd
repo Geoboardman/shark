@@ -21,10 +21,27 @@ signal game_ended()
 signal game_error(what)
 signal start_button_disabled()
 
+
+#func _process(delta):
+	#if peer:
+		#if peer.is_listening(): # is_listening is true when the server is active and listening
+			#peer.poll();
+		#if (peer.get_connection_status() == NetworkedMultiplayerPeer.CONNECTION_CONNECTED ||
+		#peer.get_connection_status() == NetworkedMultiplayerPeer.CONNECTION_CONNECTING):
+			#peer.poll();
+
 # Callback from SceneTree.
 func _player_connected(id):
 	# Registration of a client beings here, tell the connected player that we are here.
+	print("player connected idz: " + str(id))
 	var my_id = get_tree().get_network_unique_id()
+	if not players.has(my_id):
+		print("adding self")
+		players[my_id] = {
+			"name": players[0]["name"],
+			"stock": players[0]["stock"],
+			}
+		players.erase(0)
 	rpc_id(id, "register_player", players[my_id]["name"], players[my_id]["stock"])
 
 
@@ -142,8 +159,10 @@ remote func ready_to_start(id):
 
 
 func host_game(new_player_name):
-	peer = NetworkedMultiplayerENet.new()
-	peer.create_server(DEFAULT_PORT, MAX_PEERS)
+	#peer = NetworkedMultiplayerENet.new()
+	#peer.create_server(DEFAULT_PORT, MAX_PEERS)
+	peer = WebSocketServer.new()
+	peer.listen(DEFAULT_PORT, PoolStringArray(), true)		
 	get_tree().set_network_peer(peer)
 	players[1] = {
 		"name": new_player_name,
@@ -152,8 +171,10 @@ func host_game(new_player_name):
 
 
 func join_game(ip, new_player_name):
-	peer = NetworkedMultiplayerENet.new()
-	peer.create_client(ip, DEFAULT_PORT)
+	#peer = NetworkedMultiplayerENet.new()
+	#peer.create_client(ip, DEFAULT_PORT)
+	peer = WebSocketClient.new()
+	peer.connect_to_url("ws://" + str(ip) + ":" + str(DEFAULT_PORT), PoolStringArray(), true)
 	get_tree().set_network_peer(peer)
 	var id = get_tree().get_network_unique_id()
 	print("join game: " + str(id))
